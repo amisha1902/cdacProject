@@ -1,0 +1,19 @@
+{
+  "name": "salon-booking-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/amisha1902/salon-booking-system.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/amisha1902/salon-booking-system/issues"
+  },
+  "homepage": "https://github.com/amisha1902/salon-booking-system#readme"
+}
