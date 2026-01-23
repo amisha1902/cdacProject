@@ -1,5 +1,9 @@
 package com.salon.services;
 
-public interface UserService {
+import java.util.List;
 
+import com.salon.dtos.UserResp;
+
+public interface UserService {
+	List<UserResp> getAllUsers();
 }
