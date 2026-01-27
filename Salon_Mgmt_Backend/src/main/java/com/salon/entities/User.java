@@ -1,25 +1,24 @@
 package com.salon.entities;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
+@AttributeOverride(name = "id", column = @Column(name = "user_id"))
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
-    private Integer userId;
+@ToString(exclude = {"password", "profileImage"})
+public class User extends BaseEntity {
 
     @Column(name = "first_name", length = 100)
     private String firstName;
@@ -27,35 +26,43 @@ public class User {
     @Column(name = "last_name", length = 100)
     private String lastName;
 
+    @NotBlank(message = "Email is required")
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
+    @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Pattern(
+        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$",
+        message = "Password must contain uppercase, lowercase, digit, and special character"
+    )
     @Column(nullable = false, length = 255)
     private String password;
 
+    @NotBlank(message = "Mobile number is required")
+    @Pattern(
+        regexp = "^[6-9]\\d{9}$",
+        message = "Mobile number must be 10 digits and start with 6-9"
+    )
     @Column(name = "phone", length = 20)
     private String phone;
-   
+
     @Column(name = "profile_image", length = 255)
     private String profileImage;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
+    private UserRole userRole;
 
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
+    public User(String firstName, String lastName, String email, String password, String phone) {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
     }
 }

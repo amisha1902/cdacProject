@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 
 public class UserResp {
-	private Integer user_id;
-	private String first_name;
-	private String last_name;
+	private Integer id;
+	private String firstName;
+	private String lastName;
 	private String email;
 	private String phone;
 }
