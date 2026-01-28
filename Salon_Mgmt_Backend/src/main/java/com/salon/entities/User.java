@@ -17,8 +17,17 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+<<<<<<< Updated upstream
 @ToString(exclude = {"password", "profileImage"})
 public class User extends BaseEntity {
+=======
+public class User extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
+>>>>>>> Stashed changes
 
     @Column(name = "first_name", length = 100)
     private String firstName;

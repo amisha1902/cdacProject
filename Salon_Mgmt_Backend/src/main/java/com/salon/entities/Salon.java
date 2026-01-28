@@ -1,25 +1,36 @@
 package com.salon.entities;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.EnumSet;
+import java.util.Set;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "salon")
+@Getter
+@Setter
 public class Salon extends BaseEntity{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "salon_id")
-	private Integer salonId;
+	private Long salonId; //////changed
 	
 	@ManyToOne(optional = false)
     @JoinColumn(name = "owner_id", nullable = false)
@@ -58,8 +69,21 @@ public class Salon extends BaseEntity{
     @Column(name = "closing_time")
     private LocalTime closingTime;
 
-    @Column(name = "working_days", columnDefinition = "json")
-    private String workingDays;
+    @ElementCollection(targetClass = DayOfWeek.class)
+    @CollectionTable(
+        name = "salon_working_days",
+        joinColumns = @JoinColumn(name = "salon_id", referencedColumnName = "salon_id")
+    )
+    @Column(name = "day_of_week")  // column for enum values
+    @Enumerated(EnumType.STRING)
+    private Set<DayOfWeek> workingDays = EnumSet.of(
+        DayOfWeek.MONDAY,
+        DayOfWeek.TUESDAY,
+        DayOfWeek.WEDNESDAY,
+        DayOfWeek.THURSDAY,
+        DayOfWeek.FRIDAY
+    );
+
 
     @Column(name = "is_approved", nullable = false)
     private Boolean isApproved = false;
@@ -72,6 +96,3 @@ public class Salon extends BaseEntity{
 
 }
 	
-	
-	
-}

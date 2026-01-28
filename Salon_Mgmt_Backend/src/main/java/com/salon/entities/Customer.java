@@ -3,6 +3,8 @@ package com.salon.entities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.salon.entities.enums.Gender;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Table(name = "customer")
 @Getter
 @Setter
-public class Customer {
+public class Customer extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,17 +41,14 @@ public class Customer {
 	private LocalDate dateOfBirth;
 	
 	@Enumerated(EnumType.STRING)
-    @Column(length = 10)
     private Gender gender;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+//    @Column(name = "created_at", updatable = false)
+//    private LocalDateTime createdAt;
+//
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public enum Gender {
-        MALE, FEMALE, OTHER
-    }}
+   }

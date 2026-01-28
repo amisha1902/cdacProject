@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "owner")
 @Getter
 @Setter
-public class Owner {
+public class Owner extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,12 +30,12 @@ public class Owner {
     @Column(name = "is_approved", nullable = false)
     private Boolean isApproved = false;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
+//    @Column(name = "created_at", updatable = false)
+//    private LocalDateTime createdAt;
+//
+//    @PrePersist
+//    protected void onCreate() {
+//        this.createdAt = LocalDateTime.now();
+//    }
 
 }
