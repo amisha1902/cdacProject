@@ -18,7 +18,13 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"password", "profileImage"})
+
 public class User extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private Integer userId;
 
     @Column(name = "first_name", length = 100)
     private String firstName;
