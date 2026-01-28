@@ -1,0 +1,279 @@
+.rating-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f3ff 0%, #fce7f3 50%, #eff6ff 100%);
+  padding: 16px;
+}
+
+.rating-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.rating-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+}
+
+/* Rating Header */
+.rating-header {
+  background: linear-gradient(135deg, #eab308 0%, #f97316 50%, #ec4899 100%);
+  padding: 48px 32px;
+  text-align: center;
+  color: white;
+}
+
+.sparkle-icon-large {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.rating-header h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.rating-header p {
+  color: #fef3c7;
+  font-size: 14px;
+}
+
+/* Booking Info */
+.booking-info {
+  padding: 32px;
+  background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.service-icon-box {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.service-details h3 {
+  font-size: 20px;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.service-details p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.booking-datetime {
+  padding: 0 32px 24px;
+  background: linear-gradient(135deg, #f3e8ff 0%, #fce7f3 100%);
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.datetime-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Rating Form */
+.rating-form {
+  padding: 32px;
+}
+
+/* Star Rating Section */
+.star-rating-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.star-rating-section label {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 24px;
+}
+
+.stars-container {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+}
+
+.star-button:hover {
+  transform: scale(1.1);
+}
+
+.star-filled {
+  font-size: 56px;
+  color: #eab308;
+  filter: drop-shadow(0 2px 4px rgba(234, 179, 8, 0.3));
+}
+
+.star-empty {
+  font-size: 56px;
+  color: #d1d5db;
+}
+
+.rating-text {
+  color: #9333ea;
+  font-weight: 600;
+  font-size: 18px;
+  margin-top: 8px;
+}
+
+/* Comment Section */
+.comment-section {
+  margin-bottom: 24px;
+}
+
+.comment-section label {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #111827;
+  margin-bottom: 12px;
+}
+
+.comment-section textarea {
+  width: 100%;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: all 0.3s;
+}
+
+.comment-section textarea:focus {
+  outline: none;
+  border-color: #9333ea;
+  box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+}
+
+.comment-section textarea::placeholder {
+  color: #9ca3af;
+}
+
+/* Submit Button */
+.submit-rating-button {
+  width: 100%;
+  background: linear-gradient(135deg, #eab308 0%, #f97316 100%);
+  color: white;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.submit-rating-button:hover {
+  box-shadow: 0 8px 16px rgba(234, 179, 8, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Rating Success */
+.rating-success-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.success-card {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 48px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.success-icon-rating {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #eab308 0%, #f97316 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  font-size: 48px;
+}
+
+.stars-display {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  font-size: 32px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .rating-header {
+    padding: 32px 24px;
+  }
+
+  .rating-header h1 {
+    font-size: 24px;
+  }
+
+  .booking-info {
+    padding: 24px;
+  }
+
+  .rating-form {
+    padding: 24px;
+  }
+
+  .star-filled,
+  .star-empty {
+    font-size: 48px;
+  }
+
+  .booking-datetime {
+    flex-direction: column;
+    gap: 12px;
+  }
+}

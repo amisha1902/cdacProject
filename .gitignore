@@ -1,1 +1,13 @@
 /.metadata/
+# Node
+node_modules/
+dist/
+build/
+
+# IDE / OS
+.vs/
+.vscode/
+*.log
+
+# Environment
+.env
