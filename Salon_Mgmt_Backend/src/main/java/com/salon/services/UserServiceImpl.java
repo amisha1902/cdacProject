@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return new ApiResponse(
-                "New customer added with ID=" + savedUser.getId(),
+                "New customer added with ID=" + savedUser.getUserId(),
                 "SUCCESS"
         );
     }
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         User savedUser = userRepository.save(user);
 
         return new ApiResponse(
-                "New owner added with ID=" + savedUser.getId(),
+                "New owner added with ID=" + savedUser.getUserId(),
                 "SUCCESS"
         );
     }
@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
         return new LoginResponseDTO(
                 "Login successful",
                 user.getUserRole().name(),
-                user.getId()
+                user.getUserId()
         );
     }
 

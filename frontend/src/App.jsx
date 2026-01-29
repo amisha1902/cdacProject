@@ -20,6 +20,9 @@ import CartPage from './pages/customer/Cart/CartPage';
 // import "./App.css";
 // import BookingPage from "./pages/customer/BookingForm/BookingPage";
 import BookingConfirmation from './pages/customer/BookingPage/BookingConfirmation';
+import SalonList from './pages/customer/Salons/SalonList';
+import SalonDetails from './pages/customer/Salons/SalonDetails';
+import Footer from './components/Footer/Footer';
 
 function App() {
   const location = useLocation();
@@ -33,30 +36,14 @@ function App() {
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        {/* <Route path="/salonList" element={<SalonList />} />
-        <Route path="/salon/:id" element={<SalonDetails />} />
-        <Route path="/profile" element={<ProfilePage />} />
-
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> */}
+        <Route path="/salons" element={<SalonList />} />
+        <Route path="/salons/:salonId" element={<SalonDetails />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/confirmBooking" element={<BookingConfirmation/>}/>
-        {/* <Route path="/admin_dashboard" element={<AdminDashboard />} /> */}
-
-
-          
-          {/* <Route path='/myBookings'
-          element={<MyBookingsPage/>}/>
-          <Route path='/payment'
-          element={<PaymentPage/>}/>
-          <Route path='/rating'
-          element={<RatingPage/>}/>
-        <Route path="/register_salon" element={<RegisterSalon />} />
-
-        <Route path="*" element={<PageNotFound />} /> */}
+        
       </Routes>
 
-      {/* {!isAuthRoute && <Footer />} */}
+      {!isAuthRoute && <Footer />}
     </>
   );
 }

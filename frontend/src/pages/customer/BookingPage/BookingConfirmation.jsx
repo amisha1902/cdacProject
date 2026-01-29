@@ -24,35 +24,51 @@ const dummyBooking = {
 const BookingConfirmation = () => {
   const booking = dummyBooking;
 
-  const handlePayNow = async () => {
-    const res = await axios.post("http://localhost:8080/api/payments/create", {
-      bookingId: booking.bookingId,
-    });
+ const handlePayNow = async () => {
+  if (!booking.bookingId) {
+    alert("Booking ID not found. Please go back and select a booking.");
+    return;
+  }
 
-    const { razorpayOrderId, keyId, amount, currency } = res.data;
+  try {
+    const res = await axios.post(
+      "http://localhost:8080/api/payments/create",
+      { bookingId: booking.bookingId }
+    );
+
+    const { razorpayOrderId, key, amount, currency } = res.data;
 
     const options = {
-      key: res.data.key,
-      amount : res.data.amount,
-      currency :res.data.currency,
+      key: key,
+      amount: amount,
+      currency: currency,
       name: "Salon Booking",
       description: "Service Booking Payment",
       order_id: razorpayOrderId,
       handler: async function (response) {
-        await axios.post("http://localhost:8080/api/payments/verify", {
-          bookingId: booking.bookingId,
-          razorpayOrderId: response.razorpay_order_id,
-          razorpayPaymentId: response.razorpay_payment_id,
-          razorpaySignature: response.razorpay_signature,
-        });
-        alert("Payment successful 🎉");
+        try {
+          await axios.post("http://localhost:8080/api/payments/verify", {
+            bookingId: booking.bookingId,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+          alert("Payment successful 🎉");
+        } catch (verifyErr) {
+          console.error("Payment verification failed", verifyErr);
+          alert("Payment verification failed. Contact support!");
+        }
       },
       theme: { color: "#0d6efd" },
     };
 
     const razor = new window.Razorpay(options);
     razor.open();
-  };
+  } catch (err) {
+    console.error("Error creating payment order", err);
+    alert("Failed to create payment order. Please try again.");
+  }
+};
 
   return (
     <div className="container my-5">

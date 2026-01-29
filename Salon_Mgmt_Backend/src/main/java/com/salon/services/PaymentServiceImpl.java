@@ -108,7 +108,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             booking.setStatus(BookingStatus.CONFIRMED);
 
-            PaymentResponse res = new PaymentResponse();
+           PaymentResponse res = new PaymentResponse();
             res.setPaymentId(payment.getPaymentId());
             res.setBookingId(payment.getBookingId());
             res.setAmount(payment.getAmount());

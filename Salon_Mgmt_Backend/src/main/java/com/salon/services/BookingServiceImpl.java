@@ -179,7 +179,14 @@ public class BookingServiceImpl implements BookingServiceService {
 
         if (slotTaken) {
             throw new IllegalStateException("Slot already booked");
+            
         }
+//        if (slot.getAvailableCapacity() <= 0)
+//            throw new SlotFullException();
+//
+//        slot.setAvailableCapacity(slot.getAvailableCapacity() - 1);
+//        availabilityRepo.save(slot); ///update this later when almost website is done
+
     }
 
 

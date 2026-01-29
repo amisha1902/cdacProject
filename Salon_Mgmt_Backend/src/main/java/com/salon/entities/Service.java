@@ -1,6 +1,7 @@
 package com.salon.entities;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -45,5 +46,11 @@ import lombok.*;
 
 	    @Column(length = 255)
 	    private String image;
+	    
+	    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY)
+	    private List<AvailabilitySlot> availabilitySlots;
+
+	    
+
 	}
 

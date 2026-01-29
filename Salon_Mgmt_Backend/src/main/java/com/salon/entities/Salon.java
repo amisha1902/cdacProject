@@ -3,20 +3,26 @@ package com.salon.entities;
 import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -68,8 +74,8 @@ public class Salon extends BaseEntity{
 
     @Column(name = "closing_time")
     private LocalTime closingTime;
-
-    @ElementCollection(targetClass = DayOfWeek.class)
+    
+    @ElementCollection(targetClass = DayOfWeek.class, fetch = FetchType.EAGER)
     @CollectionTable(
         name = "salon_working_days",
         joinColumns = @JoinColumn(name = "salon_id", referencedColumnName = "salon_id")
@@ -80,7 +86,7 @@ public class Salon extends BaseEntity{
         DayOfWeek.MONDAY,
         DayOfWeek.TUESDAY,
         DayOfWeek.WEDNESDAY,
-        DayOfWeek.THURSDAY,
+        DayOfWeek.THURSDAY, 
         DayOfWeek.FRIDAY
     );
 
@@ -93,6 +99,13 @@ public class Salon extends BaseEntity{
 
     @Column(name = "total_reviews")
     private Integer totalReviews = 0;
+    
+    @OneToMany(
+    	    mappedBy = "salon",
+    	    cascade = CascadeType.ALL,
+    	    orphanRemoval = true
+    	)
+    	private List<ServiceCategory> serviceCategories = new ArrayList<>();
 
 }
 	
