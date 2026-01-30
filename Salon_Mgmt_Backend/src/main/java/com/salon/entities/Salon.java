@@ -3,6 +3,8 @@ package com.salon.entities;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,9 +18,15 @@ import lombok.*;
 public class Salon {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "salon_id")
    private Long salonId;
-	@Column(name="owner_id")
-   private Long ownerId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    @JsonIgnore
+    private Owner owner;
+	
+	@Column(name = "salon_name")
    private String salonName;
    private String address;
    private String city;
@@ -34,16 +42,24 @@ public class Salon {
    
    private LocalTime openingTime;
    private LocalTime closingTime;
+   
    @Column(columnDefinition = "JSON")
    private String workingDays;
    
-   private Boolean isApproved;
+   @Column(name = "is_approved")
+   private Integer isApproved;
    
+   @Column(name="rating_average")
    private Double ratingAverage;
    
+   
+   @Column(name="total_reviews")
    private Integer totalReviews;
    
+   @Column(name = "created_at")
    private LocalDateTime createdAt;
+   
+   @Column(name = "updated_at")
    private LocalDateTime updatedAt;
     
 }

@@ -23,7 +23,7 @@ import com.salon.services.SalonServicesImplementation;
 
 
 @RestController
-@RequestMapping("/Owner/Salon")
+@RequestMapping("/api/owners/salons")
 public class OwnerController {
 
 	private final SalonServicesImplementation salonServices;
@@ -33,14 +33,14 @@ public class OwnerController {
 	}
 	
 	@PostMapping
-	public Salon createSalon(@RequestHeader("Owner-Id") Long ownerId,
+	public Salon createSalon(@RequestHeader("Owner-Id") Integer ownerId,
 			@RequestBody SalonRequest req) {
 		return salonServices.createSalon(ownerId, req);
 	}
 	
 	@PutMapping("/{salonId}")
 	public Salon updateSalon(@PathVariable Long salonId,
-			@RequestHeader("Owner-Id") Long ownerId,
+			@RequestHeader("Owner-Id") Integer ownerId,
 			@RequestBody SalonRequest req
 			) {
 		return salonServices.updateSalon(salonId, ownerId, req);
@@ -48,18 +48,18 @@ public class OwnerController {
 	
 	@PostMapping(value="/{salonId}/logo",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public Salon uploadLogo(@PathVariable Long salonId,
-	        @RequestHeader("Owner-Id") Long ownerId,
+	        @RequestHeader("Owner-Id") Integer ownerId,
 	        @RequestParam("file") MultipartFile file) throws IOException {
 		 return salonServices.uploadLogo(salonId, file, ownerId);
 	}
 	
 	@PostMapping(
-	        value = "/{salonId}/gallery",
+	        value = "/{salonId}/images",
 	        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
 	)
 	public Salon uploadGallery(
 	        @PathVariable Long salonId,
-	        @RequestHeader("Owner-Id") Long ownerId,
+	        @RequestHeader("Owner-Id") Integer ownerId,
 	        @RequestPart("files") List<MultipartFile> files
 	) throws IOException {
 	    return salonServices.uploadGallery(salonId, files, ownerId);
@@ -67,14 +67,14 @@ public class OwnerController {
 
   @GetMapping("/{salonId}")
   public Salon getMySalon(@PathVariable Long salonId,
-		  @RequestHeader("Owner-Id") Long ownerId) {
+		  @RequestHeader("Owner-Id") Integer ownerId) {
 	  return salonServices.getMySalon(salonId, ownerId);
   }
 	
   @PostMapping("/{salonId}/submit")
   public Salon submitSalon(
           @PathVariable Long salonId,
-          @RequestHeader("Owner-Id") Long ownerId
+          @RequestHeader("Owner-Id") Integer ownerId
   ) {
       return salonServices.submitSalon(salonId, ownerId);
   }

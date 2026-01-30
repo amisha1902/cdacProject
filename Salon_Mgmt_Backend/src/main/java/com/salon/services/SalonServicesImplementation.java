@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.google.gson.Gson;
 import com.salon.Repository.SalonRepository;
 import com.salon.entities.SalonRequest;
+import com.salon.entities.Owner;
 import com.salon.entities.Salon;
 
 @Service
@@ -26,9 +27,12 @@ public class SalonServicesImplementation implements SalonServices {
      
     
 	@Override
-	public Salon createSalon(Long ownerId, SalonRequest req) {
+	public Salon createSalon(Integer ownerId, SalonRequest req) {
+		Owner owner = new Owner();
+	    owner.setOwnerId(ownerId);
+		
 		Salon salon = Salon.builder()
-				.ownerId(ownerId)
+				.owner(owner)
 				.salonName(req.getSalonName())
                 .address(req.getAddress())
                 .city(req.getCity())
@@ -39,7 +43,7 @@ public class SalonServicesImplementation implements SalonServices {
                 .openingTime(LocalTime.parse(req.getOpeningTime()))
                 .closingTime(LocalTime.parse(req.getClosingTime()))
                 .workingDays(new Gson().toJson(req.getWorkingDays())) // convert list to JSON
-                .isApproved(false)
+                .isApproved(0)
                 .ratingAverage(0.0)
                 .totalReviews(0)
                 .createdAt(LocalDateTime.now())
@@ -50,13 +54,13 @@ public class SalonServicesImplementation implements SalonServices {
 
 
 	@Override
-	public Salon updateSalon(Long salonId, Long ownerId, SalonRequest req) {
+	public Salon updateSalon(Long salonId, Integer ownerId, SalonRequest req) {
 		Salon salon = salonRepository.findById(salonId)
 				.orElseThrow(()-> new RuntimeException("Salon not Found"));
 		
 		//Security check Only owner can update
 		
-		if(!salon.getOwnerId().equals(ownerId)) {
+		if(!salon.getOwner().getOwnerId().equals(ownerId)) {
 			 throw new RuntimeException("You are not authorized to update this salon");
 		}
 		 salon.setSalonName(req.getSalonName());
@@ -78,12 +82,12 @@ public class SalonServicesImplementation implements SalonServices {
 
 
 	@Override
-	public Salon uploadLogo(Long salonId, MultipartFile file, Long ownerId) throws IOException {
+	public Salon uploadLogo(Long salonId, MultipartFile file, Integer ownerId) throws IOException {
 
 	    Salon salon = salonRepository.findById(salonId)
 	            .orElseThrow(() -> new RuntimeException("Salon not found"));
 
-	    if (!salon.getOwnerId().equals(ownerId)) {
+	    if (!salon.getOwner().getOwnerId().equals(ownerId)) {
 	        throw new RuntimeException("Not authorized");
 	    }
 
@@ -107,12 +111,12 @@ public class SalonServicesImplementation implements SalonServices {
 	
 	
 	@Override
-	public Salon uploadGallery(Long salonId, List<MultipartFile> files, Long ownerId) throws IOException {
+	public Salon uploadGallery(Long salonId, List<MultipartFile> files, Integer ownerId) throws IOException {
 
 	    Salon salon = salonRepository.findById(salonId)
 	            .orElseThrow(() -> new RuntimeException("Salon not found"));
 
-	    if (!salon.getOwnerId().equals(ownerId)) {
+	    if (!salon.getOwner().getOwnerId().equals(ownerId)) {
 	        throw new RuntimeException("Unauthorized");
 	    }
 
@@ -145,23 +149,23 @@ public class SalonServicesImplementation implements SalonServices {
 
 
 	@Override
-	public Salon getMySalon(Long salonId, Long ownerId) {
+	public Salon getMySalon(Long salonId, Integer ownerId) {
 		Salon salon = salonRepository.findById(salonId)
 				.orElseThrow(()-> new RuntimeException("Salon not found"));
 		
-		if(!salon.getOwnerId().equals(ownerId)) {
+		if(!salon.getOwner().getOwnerId().equals(ownerId)) {
 			throw new RuntimeException("Unauthorized to view this Salon");
 		}
 		return salon;
 	}
 
 @Override
-	public Salon submitSalon(Long salonId, Long ownerId) {
+	public Salon submitSalon(Long salonId, Integer ownerId) {
 	    Salon salon = salonRepository.findById(salonId)
 	            .orElseThrow(() -> new RuntimeException("Salon not found"));
 
 	    // Check owner
-	    if (!salon.getOwnerId().equals(ownerId)) {
+	    if (!salon.getOwner().getOwnerId().equals(ownerId)) {
 	        throw new RuntimeException("Unauthorized");
 	    }
 
@@ -185,7 +189,7 @@ public class SalonServicesImplementation implements SalonServices {
 	    salon.setUpdatedAt(LocalDateTime.now());
 
 	    return salonRepository.save(salon);
-	}
+}
 
 
 

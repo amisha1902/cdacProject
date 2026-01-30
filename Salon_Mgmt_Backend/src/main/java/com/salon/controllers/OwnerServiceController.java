@@ -15,7 +15,7 @@ import com.salon.entities.Services;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/owners")
+@RequestMapping("/api/owners/services")
 @RequiredArgsConstructor
 public class OwnerServiceController {
 
@@ -29,7 +29,7 @@ public Services createService(
 }
 
 
-    @PutMapping("/services/{serviceId}")
+    @PutMapping("/{serviceId}")
     public Services updateService(
             @PathVariable Integer serviceId,
             @RequestBody ServiceRequest request,

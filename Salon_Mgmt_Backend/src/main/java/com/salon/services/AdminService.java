@@ -1,5 +1,11 @@
 package com.salon.services;
 
-public interface AdminService {
+import java.util.List;
 
+import com.salon.entities.Salon;
+
+public interface AdminService {
+  List<Salon> getPendingSalons();
+  Salon approveSalon(Long salonId);
+  Salon rejectSalon(Long salonId);
 }

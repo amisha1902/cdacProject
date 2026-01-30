@@ -3,14 +3,10 @@ package com.salon.entities;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "service")
@@ -22,11 +18,17 @@ public class Services {
     @Column(name = "service_id")
     private Integer serviceId;
 
-    @Column(name = "salon_id", nullable = false)
-    private Integer salonId;
+    // FK → SALON
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "salon_id", nullable = false)
+    @JsonIgnore
+    private Salon salon;
 
-    @Column(name = "staff_id", nullable = false)
-    private Integer staffId;
+    // FK → STAFF
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", nullable = false)
+    @JsonIgnore
+    private Staff staff;
 
     @Column(name = "service_name")
     private String serviceName;
@@ -34,19 +36,21 @@ public class Services {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "price", precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "duration_minutes")
     private Integer durationMinutes;
 
     @Column(name = "is_available")
-    private Integer isAvailable;
+    private Integer isAvailable = 1;
 
-    @Column(name = "image")
+    @Column(name = "capacity")
+    private Integer capacity;
+
     private String image;
 
     @Column(name = "created_at")
@@ -55,5 +59,3 @@ public class Services {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-
-
