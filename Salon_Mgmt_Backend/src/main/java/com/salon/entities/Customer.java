@@ -1,35 +1,38 @@
 package com.salon.entities;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "owner")
+@Table(name = "customer")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Owner {
+public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "owner_id")
-    private Integer ownerId;
+    @Column(name = "customer_id")
+    private Integer customerId;
 
     // 🔗 One-to-One with User
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(name = "business_license", length = 100)
-    private String businessLicense;
+    @Column(length = 255)
+    private String address;
 
-    @Column(name = "pan_number", length = 20)
-    private String panNumber;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
 
-    @Column(name = "is_approved")
-    private Boolean isApproved = false;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
 
     @Column(name = "created_at", updatable = false, insertable = false)
     private java.time.LocalDateTime createdAt;

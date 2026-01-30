@@ -17,6 +17,7 @@ import com.salon.dtos.*;
 import com.salon.entities.User;
 import com.salon.entities.UserRole;
 import com.salon.repository.UserRepository;
+import com.salon.security.JwtUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,9 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final PasswordEncoder passwordEncoder;   
+    private final PasswordEncoder passwordEncoder; 
+    private final JwtUtil jwtUtil;
+
 
     @Override
     public List<UserResp> getAllUsers() {
@@ -103,13 +106,21 @@ public class UserServiceImpl implements UserService {
             throw new ApiException("Invalid email or password");
         }
 
+        String token = jwtUtil.generateToken(
+                user.getId(),
+                user.getUserRole().name()
+        );
+
+
         return new LoginResponseDTO(
                 "Login successful",
                 user.getUserRole().name(),
-                user.getId()
+                user.getId(),
+                token
         );
     }
-
+    
+    
     private static final String UPLOAD_DIR = "uploads/profile-images/";
 
     @Override

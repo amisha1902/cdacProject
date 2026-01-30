@@ -9,11 +9,12 @@
 		<version>3.5.8</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.salon</groupId>
-	<artifactId>Salon_Mgmt_Backend</artifactId>
+	<groupId>com.cdac</groupId>
+	<artifactId>healthcare_backend_security_jwt</artifactId>
 	<version>0.0.1</version>
-	<name>Salon_Mgmt_Backend</name>
-	<description>Template for Spring Boot based Backend REST API</description>
+	<name>healthcare_backend_security_jwt</name>
+	<description>Spring Boot based Healthcare Backend with Spring security DB
+		based user details and JWT</description>
 	<url />
 	<licenses>
 		<license />
@@ -47,11 +48,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		<dependency>
-  			<groupId>org.springframework.security</groupId>
-  			<artifactId>spring-security-crypto</artifactId>
-		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -87,6 +83,36 @@
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-api</artifactId>
+		    <version>0.11.5</version>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-impl</artifactId>
+		    <version>0.11.5</version>
+		    <scope>runtime</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>io.jsonwebtoken</groupId>
+		    <artifactId>jjwt-jackson</artifactId>
+		    <version>0.11.5</version>
+		    <scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -1,10 +1,11 @@
 package com.salon.controllers;
 
 import java.util.List;
-
+import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,6 +26,8 @@ import com.salon.dtos.UpdateProfileDTO;
 import com.salon.dtos.UserRegisterDTO;
 import com.salon.dtos.UserResp;
 import com.salon.services.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 
@@ -95,10 +98,17 @@ public class UserController {
             @RequestParam("image") MultipartFile file) {
         return ResponseEntity.ok(userService.uploadProfileImage(id, file));
     }
-    @GetMapping("/profile/{id}")
-    public ResponseEntity<?> getProfile(@PathVariable Integer id) {
-        return ResponseEntity.ok(userService.getProfile(id));
+    @GetMapping("/profile")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER', 'OWNER')")
+    public ResponseEntity<?> getProfile(Authentication authentication) {
+
+        Integer userId = (Integer) authentication.getPrincipal();
+        return ResponseEntity.ok(userService.getProfile(userId));
     }
+
+
+
+
 
 
 }
