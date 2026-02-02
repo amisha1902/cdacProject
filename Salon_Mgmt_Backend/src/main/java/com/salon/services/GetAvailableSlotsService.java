@@ -23,14 +23,14 @@ public class GetAvailableSlotsService {
         LocalDate endDate = today.plusDays(2);
 
         List<AvailabilitySlot> slots = slotRepo
-                .findBySalonIdAndService_ServiceIdAndDateBetweenAndAvailableCapacityGreaterThanOrderByDateAscStartTimeAsc(
+                .findBySalonIdAndService_ServiceIdAndDateBetweenAndAvailableCapacityGreaterThanEqualOrderByDateAscStartTimeAsc(
                         salonId,
                         serviceId,
                         today,
                         endDate,
                         0
                 );
-
+System.out.println("available slots"+slots);
         return slots.stream()
                 .map(s -> new SlotResponse(
                         s.getSlotId(),

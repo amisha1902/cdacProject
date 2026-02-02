@@ -14,5 +14,6 @@ public class BookingResponse {
     private BookingStatus status;
     private BigDecimal totalAmount;
     private List<BookingServiceResponse> services;
+    private String salonName;
 }
 

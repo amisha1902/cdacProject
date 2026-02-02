@@ -21,7 +21,7 @@ import com.salon.entities.Booking;
 import com.salon.entities.Payment;
 import com.salon.entities.enums.BookingStatus;
 import com.salon.entities.enums.PaymentStatus;
-import com.salon.exceptions.ResourceNotFoundException;
+import com.salon.customException.ResourceNotFoundException;
 import com.salon.repository.BookingRepository;
 import com.salon.repository.PaymentRepository;
 
@@ -47,7 +47,7 @@ public class PaymentServiceImpl implements PaymentService {
         Booking booking = bookingRepo.findById(request.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        if (booking.getStatus() != BookingStatus.PENDING) {
+        if (booking.getStatus() != BookingStatus.PENDING_PAYMENT) {
             throw new IllegalStateException("Payment not allowed for booking in status " + booking.getStatus());
         }
 

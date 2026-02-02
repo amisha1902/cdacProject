@@ -17,6 +17,8 @@ import lombok.ToString;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(exclude = {"password", "profileImage"})
+
 public class User extends BaseEntity {
 
     @Id

@@ -1,0 +1,90 @@
+.register-page {
+  min-height: 100vh;
+  background: #f6f3fb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-card {
+  display: flex;
+  width: 900px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px;
+}
+
+.left-content {
+  flex: 1;
+  padding-right: 40px;
+}
+
+.left-content h1 {
+  font-size: 36px;
+}
+
+.left-content p {
+  color: #777;
+  margin-top: 10px;
+}
+
+.right-form {
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  gap: 20px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+  border: none;
+  background: #f2f2f2;
+}
+
+.password-box {
+  position: relative;
+}
+
+.password-box span {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 30px;
+  border: none;
+  background: black;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.login-link {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.login-link a {
+  color: red;
+  text-decoration: none;
+}

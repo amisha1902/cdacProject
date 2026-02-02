@@ -15,4 +15,12 @@ public interface ServiceRepository extends JpaRepository<Service, Integer> {
     		WHERE s.category.categoryId = :categoryId
     		""")
     		List<Service> findByCategoryId(@Param("categoryId") Integer categoryId);
+    
+    //for slot generation
+    @Query("""
+    	    SELECT s FROM Service s
+    	    WHERE s.isAvailable = true
+    	""")
+    	List<Service> findAllActiveServices();
+
 }

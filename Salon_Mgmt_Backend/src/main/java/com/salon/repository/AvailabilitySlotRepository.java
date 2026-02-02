@@ -9,13 +9,15 @@ import com.salon.entities.AvailabilitySlot;
 
 public interface AvailabilitySlotRepository extends JpaRepository<AvailabilitySlot, Long> {
 
-    boolean existsByService_ServiceIdAndDateBetween(Integer serviceId, LocalDate from, LocalDate to);
+	boolean existsByService_ServiceIdAndDate(Integer serviceId, LocalDate date);
 
-    List<AvailabilitySlot> findBySalonIdAndService_ServiceIdAndDateBetweenAndAvailableCapacityGreaterThanOrderByDateAscStartTimeAsc(
+    List<AvailabilitySlot>
+    findBySalonIdAndService_ServiceIdAndDateBetweenAndAvailableCapacityGreaterThanEqualOrderByDateAscStartTimeAsc(
             Long salonId,
             Integer serviceId,
             LocalDate from,
             LocalDate to,
             Integer minCapacity
     );
+
 }

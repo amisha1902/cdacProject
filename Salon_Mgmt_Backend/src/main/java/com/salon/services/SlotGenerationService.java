@@ -9,13 +9,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.salon.dtos.SlotGenerationRequest;
 import com.salon.entities.AvailabilitySlot;
 import com.salon.entities.Salon;
-//import com.salon.entities.Service as SalonService;
 import com.salon.repository.AvailabilitySlotRepository;
 import com.salon.repository.ServiceRepository;
-import com.salon.util.SlotTimeGenerator;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,55 +20,61 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SlotGenerationService {
 
+    private static final int SLOT_DURATION_MINUTES = 60;
+
     private final AvailabilitySlotRepository slotRepo;
     private final ServiceRepository serviceRepo;
 
     @Transactional
-    public void generateSlots(Integer serviceId, SlotGenerationRequest request) {
+    public void generateSlotsForDateRange(LocalDate fromDate, LocalDate toDate) {
 
-        com.salon.entities.Service service = serviceRepo.findById(serviceId)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+        List<com.salon.entities.Service> services = serviceRepo.findAllActiveServices();
 
-        // Prevent duplicate generation
-        boolean alreadyExists = slotRepo.existsByService_ServiceIdAndDateBetween(
-                serviceId,
-                request.getFromDate(),
-                request.getToDate()
-        );
-
-        if (alreadyExists) {
-            throw new RuntimeException("Slots already generated for this date range");
+        for (com.salon.entities.Service service : services) {
+            generateSlotsForService(service, fromDate, toDate);
         }
+    }
+
+    private void generateSlotsForService(com.salon.entities.Service service, LocalDate from, LocalDate to) {
 
         Salon salon = service.getSalon();
         LocalTime opening = salon.getOpeningTime();
         LocalTime closing = salon.getClosingTime();
-        int slotMinutes = request.getSlotMinutes();
-
-        List<LocalTime> startTimes = SlotTimeGenerator.generateStartTimes(opening, closing, slotMinutes);
 
         List<AvailabilitySlot> slotsToSave = new ArrayList<>();
 
-        for (LocalDate date = request.getFromDate();
-             !date.isAfter(request.getToDate());
-             date = date.plusDays(1)) {
+        for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
 
+            // Skip non-working days
             DayOfWeek day = date.getDayOfWeek();
             if (!salon.getWorkingDays().contains(day)) continue;
 
-            for (LocalTime start : startTimes) {
+            // If slots already exist for this service+date, skip entirely (idempotent)
+            if (slotRepo.existsByService_ServiceIdAndDate(service.getServiceId(), date)) {
+                continue;
+            }
+
+            LocalTime start = opening;
+
+            while (start.plusMinutes(SLOT_DURATION_MINUTES).compareTo(closing) <= 0) {
+
                 AvailabilitySlot slot = new AvailabilitySlot();
                 slot.setSalonId(salon.getSalonId());
                 slot.setService(service);
                 slot.setDate(date);
                 slot.setStartTime(start);
-                slot.setEndTime(start.plusMinutes(slotMinutes));
-                slot.setCapacity(request.getCapacity());
-                slot.setAvailableCapacity(request.getCapacity());
+                slot.setEndTime(start.plusMinutes(SLOT_DURATION_MINUTES));
+                slot.setCapacity(4);              // or service-specific capacity
+                slot.setAvailableCapacity(4);
+                slot.setBooked(false);
+
                 slotsToSave.add(slot);
+                start = start.plusMinutes(SLOT_DURATION_MINUTES);
             }
         }
 
-        slotRepo.saveAll(slotsToSave);
+        if (!slotsToSave.isEmpty()) {
+            slotRepo.saveAll(slotsToSave);
+        }
     }
 }

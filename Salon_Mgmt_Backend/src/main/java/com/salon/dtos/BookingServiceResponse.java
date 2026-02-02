@@ -11,6 +11,7 @@ import lombok.Setter;
 public class BookingServiceResponse {
     private Integer serviceId;
     private String serviceName;
+    private Integer quantity;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;

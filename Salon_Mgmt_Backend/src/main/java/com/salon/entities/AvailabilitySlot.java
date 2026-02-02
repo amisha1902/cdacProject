@@ -41,6 +41,7 @@ public class AvailabilitySlot {
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
+    private boolean booked;
 
     private Integer capacity;           // total allowed bookings
     private Integer availableCapacity;  // remaining slots

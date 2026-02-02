@@ -8,12 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.salon.customException.ResourceNotFoundException;
 import com.salon.dtos.AddToCart;
 import com.salon.dtos.CartItemResponse;
 import com.salon.dtos.CartResponse;
 import com.salon.dtos.UpdateCartRequest;
 import com.salon.entities.*;
-import com.salon.exceptions.ResourceNotFoundException;
 import com.salon.repository.CartItemRepository;
 import com.salon.repository.CartRepository;
 import com.salon.repository.ServiceRepository;
@@ -86,6 +86,7 @@ public class CartServiceImpl implements CartService {
 				.orElseGet(()->{
 					Cart newCart = new Cart();
 					newCart.setUserId(userId);
+			        newCart.setSalonId(service.getSalon().getSalonId()); // must set something
 					return cartRepository.save(newCart);
 				});
 		
@@ -183,9 +184,9 @@ return response;
         return response;
 	}
 
-	
+	 
 	//Delete cart item
-	@Transactional
+	@Transactional 
 	public CartResponse deleteItem(Integer itemId, Integer userId) {
 
 	    CartItem item = cartItemRepo.findByCartItemIdAndCart_UserId(itemId, userId)

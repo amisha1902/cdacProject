@@ -19,7 +19,7 @@ public class Cart {
     @Column(name = "user_id", nullable = false, unique = true)
     private Integer userId;
 
-    @Column(name = "salon_id", nullable = false) 
+    @Column(name = "salon_id", nullable = true) 
     private Long salonId;  // <-- CHANGE Integer -> Long
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)

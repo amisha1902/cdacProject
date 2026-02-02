@@ -14,4 +14,6 @@ public class CartItemResponse {
     private Integer quantity;
     private LocalDate date;
     private LocalTime time;
+    private BigDecimal totalPrice;
+
 }

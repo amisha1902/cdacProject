@@ -55,7 +55,7 @@ export default function HomePage() {
         className="position-relative overflow-hidden d-flex align-items-center"
         style={{
           minHeight: "90vh",
-          top: "30",
+top: "30px", 
           background: "linear-gradient(135deg, #fff7f2, #fefefe)",
         }}
       >

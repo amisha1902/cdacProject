@@ -2,6 +2,7 @@
 <section name="Workbench">
 	<section name="MavenProjectImportWizardPage">
 		<list key="rootDirectory">
+			<item value="D:\CDAC Project\cdacProject\Salon_Mgmt_Backend"/>
 			<item value="C:\Users\asus\Desktop\salon Mgmt\cdacProject"/>
 		</list>
 		<list key="projectNameTemplate">

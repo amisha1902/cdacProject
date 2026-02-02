@@ -1,0 +1,86 @@
+.admin-page {
+  background: linear-gradient(#252424, #262525);
+  min-height: 100vh;
+  padding: 30px;
+  color: rgb(3, 0, 0);
+}
+
+/* ✅ ADMIN DASHBOARD TITLE IN WHITE */
+.admin-title {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #ffffff;   /* 👈 WHITE */
+}
+
+.admin-card {
+  background: #fcf7f7;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+/* Section title inside card */
+.section-title {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #000000;   /* optional: black */
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* ✅ TABLE HEADER TEXT IN BLACK */
+.admin-table th {
+  padding: 12px;
+  text-align: left;
+  color: #000000;        /* 👈 BLACK */
+  font-weight: 700;
+  border-bottom: 1px solid #ccc;
+}
+
+/* TABLE BODY */
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  color: #000000;
+}
+
+.admin-table tr {
+  border-bottom: 1px solid #ddd;
+}
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.badge.active {
+  background: #1f7a3f;
+}
+
+.badge.blocked {
+  background: #7a1f1f;
+}
+
+.action-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.action-btn.success {
+  background: #1f7a3f;
+  color: white;
+}
+
+.action-btn.danger {
+  background: #7a1f1f;
+  color: white;
+}

@@ -20,7 +20,7 @@ import com.salon.entities.Cart;
 import com.salon.entities.CartItem;
 import com.salon.entities.Salon;
 import com.salon.entities.enums.BookingStatus;
-import com.salon.exceptions.ResourceNotFoundException;
+import com.salon.customException.ResourceNotFoundException;
 import com.salon.repository.BookingRepository;
 import com.salon.repository.BookingServiceRepository;
 import com.salon.repository.CartRepository;
@@ -83,8 +83,8 @@ public class BookingServiceImpl implements BookingServiceService {
         bookingRepo.save(booking);
 
         // Clear cart
-        cart.getItems().clear();
-        cartRepo.save(cart);
+//        cart.getItems().clear();
+//        cartRepo.save(cart);
 
         return mapToResponse(booking);
     }
@@ -92,7 +92,7 @@ public class BookingServiceImpl implements BookingServiceService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings(Integer userId) {
-        return bookingRepo.findByCustomerId(userId)
+        return bookingRepo.findByCustomerIdOrderByBookingIdDesc(userId)
                 .stream().map(this::mapToResponse).toList();
     }
 
@@ -196,6 +196,7 @@ public class BookingServiceImpl implements BookingServiceService {
         res.setStatus(booking.getStatus());
         res.setTotalAmount(booking.getTotalAmount());
 
+        // Map services
         List<BookingServiceResponse> services = booking.getServices().stream()
                 .map(bs -> {
                     BookingServiceResponse dto = new BookingServiceResponse();
@@ -208,8 +209,10 @@ public class BookingServiceImpl implements BookingServiceService {
                     return dto;
                 })
                 .toList();
-
         res.setServices(services);
+        res.setSalonName(booking.getSalon() != null ? booking.getSalon().getSalonName() : null);
+
         return res;
     }
+
 }

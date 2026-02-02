@@ -1,0 +1,137 @@
+.register-page {
+  min-height: 100vh;
+  background: #f4f4f4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* White box */
+.register-box {
+  width: 550px;
+  background: #ffffff;
+  padding: 45px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+/* Titles */
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6f6f6f;
+  margin-bottom: 25px;
+}
+
+/* Form layout */
+.form {
+  text-align: left;
+}
+
+.row-group {
+  display: flex;
+  gap: 15px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+/* Labels */
+label {
+  font-size: 14px;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+/* Inputs */
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  background: #f1f1f1;
+  font-size: 14px;
+  color: #000;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8f8f8f;
+}
+
+textarea {
+  height: 75px;
+  resize: none;
+}
+
+/* File input */
+.file-input {
+  background: #fff;
+}
+
+/* Password Box */
+.password-box {
+  position: relative;
+}
+
+.eye-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+
+/* Terms */
+.terms {
+  display: flex;
+  gap: 10px;
+  font-size: 14px;
+  align-items: center;
+  margin: 12px 0 18px;
+}
+
+.terms a {
+  color: #ff4b4b;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Button */
+.submit-btn {
+  width: 100%;
+  padding: 15px;
+  border-radius: 30px;
+  border: none;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.submit-btn:hover {
+  background: #222;
+}
+
+/* Login text */
+.login-text {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.login-text a {
+  color: #ff4b4b;
+  font-weight: 600;
+  text-decoration: none;
+}

@@ -1,350 +1,208 @@
-// import React, { useEffect, useState } from "react";
-// import axios from "axios";
-
-// const CartPage = () => {
-//   const [cart, setCart] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   const USER_ID = 1;
-
-//   const fetchCart = async () => {
-//     try {
-//       const res = await axios.get("/api/cart/getCart", {
-//         params: { userId: USER_ID },
-//       });
-//       setCart(res.data);
-//     } catch (err) {
-//       console.error("Failed to fetch cart", err);
-//       setCart({ items: [] }); // defensive fallback
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchCart();
-//   }, []);
-
-//   const updateItem = async (itemId, payload) => {
-//     await axios.put(`/api/cart/update/${itemId}`, payload, {
-//       params: { userId: USER_ID },
-//     });
-//     fetchCart();
-//   };
-
-//   const deleteItem = async (itemId) => {
-//     await axios.delete(`/api/cart/delete/${itemId}`, {
-//       params: { userId: USER_ID },
-//     });
-//     fetchCart();
-//   };
-
-//   const handleQtyChange = (item, delta) => {
-//     const newQty = item.quantity + delta;
-//     if (newQty < 1) return;
-
-//     updateItem(item.itemId, {
-//       quantity: newQty,
-//       date: item.date,
-//       time: item.time,
-//     });
-//   };
-
-//   const getItemTotal = (item) => item.price * item.quantity;
-
-//   const getCartTotal = () =>
-//     cart?.items?.reduce((sum, item) => sum + getItemTotal(item), 0) || 0;
-
-//   if (loading) return <div className="text-center mt-5">Loading cart...</div>;
-
-//   if (!cart?.items?.length) {
-//     return (
-//       <div className="container mt-5 text-center">
-//         <h5>Your cart is empty 🛒</h5>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="container my-4">
-//       <div className="row justify-content-center">
-//         <div className="col-lg-8 col-md-10 col-12">
-//           <div className="card shadow-sm">
-//             <div className="card-header bg-white fw-bold fs-5">
-//               Your Cart
-//             </div>
-
-//             <div className="card-body">
-//               {cart.items.map((item) => (
-//                 <div
-//                   key={item.itemId}
-//                   className="border-bottom pb-3 mb-3 d-flex flex-column gap-2"
-//                 >
-//                   <div className="d-flex justify-content-between align-items-start">
-//                     <div>
-//                       <h6 className="mb-1">{item.serviceName}</h6>
-//                       <p className="text-muted mb-1 small">
-//                         {item.serviceDescription}
-//                       </p>
-//                     </div>
-
-//                     <button
-//                       className="btn btn-sm btn-outline-danger"
-//                       onClick={() => deleteItem(item.itemId)}
-//                     >
-//                       ✕
-//                     </button>
-//                   </div>
-
-//                   <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-//                     <div className="btn-group">
-//                       <button
-//                         className="btn btn-outline-secondary btn-sm"
-//                         onClick={() => handleQtyChange(item, -1)}
-//                       >
-//                         −
-//                       </button>
-//                       <button className="btn btn-outline-secondary btn-sm" disabled>
-//                         {item.quantity}
-//                       </button>
-//                       <button
-//                         className="btn btn-outline-secondary btn-sm"
-//                         onClick={() => handleQtyChange(item, 1)}
-//                       >
-//                         +
-//                       </button>
-//                     </div>
-
-//                     <div className="fw-semibold">
-//                       ₹{getItemTotal(item)}
-//                     </div>
-//                   </div>
-
-//                   <div className="row g-2">
-//                     <div className="col-6">
-//                       <input
-//                         type="date"
-//                         className="form-control form-control-sm"
-//                         value={item.date}
-//                         onChange={(e) =>
-//                           updateItem(item.itemId, {
-//                             quantity: item.quantity,
-//                             date: e.target.value,
-//                             time: item.time,
-//                           })
-//                         }
-//                       />
-//                     </div>
-
-//                     <div className="col-6">
-//                       <input
-//                         type="time"
-//                         className="form-control form-control-sm"
-//                         value={item.time}
-//                         onChange={(e) =>
-//                           updateItem(item.itemId, {
-//                             quantity: item.quantity,
-//                             date: item.date,
-//                             time: e.target.value,
-//                           })
-//                         }
-//                       />
-//                     </div>
-//                   </div>
-//                 </div>
-//               ))}
-
-//               <div className="d-flex justify-content-between align-items-center border-top pt-3">
-//                 <h6 className="mb-0">Total Amount</h6>
-//                 <h5 className="mb-0 fw-bold">₹{getCartTotal()}</h5>
-//               </div>
-//             </div>
-
-//             <div className="card-footer bg-white">
-//               <button className="btn btn-success w-100 fw-semibold">
-//                 Confirm Booking
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CartPage;
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaTrashAlt, FaMinus, FaPlus, FaClock, FaCalendarAlt } from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
+import ProgressTracker from "../../../components/ProgressTracker";
+
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      itemId: 1,
-      serviceName: "Haircut",
-      serviceDescription: "Professional haircut by senior stylist",
-      price: 250,
-      quantity: 1,
-      date: "2026-01-28",
-      time: "14:00",
-    },
-    {
-      itemId: 2,
-      serviceName: "Facial Cleanup",
-      serviceDescription: "Deep cleansing facial treatment",
-      price: 600,
-      quantity: 2,
-      date: "2026-01-29",
-      time: "16:30",
-    },
-  ]);
+  const navigate = useNavigate();
+  const [cart, setCart] = useState([]);
+  const [cartId, setCartId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const updateQuantity = (itemId, delta) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.itemId === itemId
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const fetchCart = async () => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
+    if (!userId || !token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.get("/api/cart/getCart", {
+        params: { userId },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setCartId(res.data.cartId);
+
+      const items = res.data.items?.map(item => ({
+        id: item.itemId,
+        serviceId: item.serviceId,
+        name: item.serviceName || "Service",
+        date: item.date || "",
+        time: item.time || "",
+        price: item.price || 0,
+        quantity: item.quantity || 1,
+        image: "https://via.placeholder.com/100?text=Service",
+      })) || [];
+
+      setCart(items);
+      setError("");
+    } catch (err) {
+      console.error("Failed to fetch cart:", err);
+      setError("Failed to load cart items");
+      setCart([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateDate = (itemId, date) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.itemId === itemId ? { ...item, date } : item
-      )
-    );
+  const updateCartItem = async (itemId, updateData) => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+
+    try {
+      const res = await axios.put(`/api/cart/update/${itemId}`, updateData, {
+        headers: { Authorization: `Bearer ${token}`, "X-USER-ID": userId },
+      });
+
+      setCart(items =>
+        items.map(i => i.id === itemId ? { ...i, ...res.data } : i)
+      );
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error("Failed to update cart item:", err);
+      alert(err.response?.data?.message || "Failed to update item");
+    }
   };
 
-  const updateTime = (itemId, time) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.itemId === itemId ? { ...item, time } : item
-      )
-    );
+  const increaseQty = (itemId) => {
+    const item = cart.find(i => i.id === itemId);
+    updateCartItem(itemId, { quantity: item.quantity + 1 });
   };
 
-  const deleteItem = (itemId) => {
-    setCartItems((prev) => prev.filter((item) => item.itemId !== itemId));
+  const decreaseQty = (itemId) => {
+    const item = cart.find(i => i.id === itemId);
+    if (item.quantity > 1) updateCartItem(itemId, { quantity: item.quantity - 1 });
   };
 
-  const getItemTotal = (item) => item.price * item.quantity;
-  const cartTotal = cartItems.reduce((sum, item) => sum + getItemTotal(item), 0);
+  const deleteItem = async (itemId) => {
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
 
-  if (cartItems.length === 0) {
-    return (
-      <div className="container mt-5 text-center">
-        <h5>Your cart is empty 🛒</h5>
-      </div>
-    );
-  }
-  
-const navigate = useNavigate();
-
-  const handleConfirmBooking = () => {
-    // Navigate to confirmBooking page
-    navigate("/confirmBooking");
+    try {
+      await axios.delete(`/api/cart/delete/${itemId}`, {
+        headers: { Authorization: `Bearer ${token}`, "X-USER-ID": userId },
+      });
+      setCart(items => items.filter(i => i.id !== itemId));
+      window.dispatchEvent(new Event('cartUpdated'));
+    } catch (err) {
+      console.error("Failed to delete item:", err);
+      alert(err.response?.data?.message || "Failed to remove item");
+    }
   };
+
+  const handleCheckout = async () => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
+    if (!userId || !token) {
+      navigate("/login");
+      return;
+    }
+
+    if (!cartId) {
+      alert("Cart not found. Please try again.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post("/api/bookings/checkout", { cartId }, {
+        params: { userId },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      });
+
+      navigate("/confirmBooking", { state: { booking: res.data } });
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      alert(err.response?.data?.message || "Checkout failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = subtotal;
+
+  if (loading) return <div className="container text-center py-5"><h2>Loading cart...</h2></div>;
+  if (error) return <div className="container text-center py-5 text-danger"><h2>{error}</h2></div>;
+
   return (
-    <div className="container my-4">
-      <div className="row justify-content-center">
-        <div className="col-lg-8 col-md-10 col-12">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white fw-bold fs-5">
-              Your Cart
-            </div>
+    <div className="container py-5">
+   {/* 0 = Cart, 1 = Payment, 2 = Booked! */}
 
-            <div className="card-body">
-              {cartItems.map((item) => (
-                <div
-                  key={item.itemId}
-                  className="border-bottom pb-3 mb-3 d-flex flex-column gap-2"
-                >
-                  {/* Top row */}
-                  <div className="d-flex justify-content-between align-items-start">
-                    <div>
-                      <h6 className="mb-1">{item.serviceName}</h6>
-                      <p className="text-muted mb-1 small">
-                        {item.serviceDescription}
-                      </p>
-                    </div>
-
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      onClick={() => deleteItem(item.itemId)}
-                    >
-                      ✕
-                    </button>
+      {cart.length === 0 ? (
+        <div className="text-center my-5">
+          <h3>Your cart is empty</h3>
+          <button className="btn btn-primary mt-3" onClick={() => navigate("/salonList")}>
+            Browse Services
+          </button>
+        </div>
+      ) : (
+        
+        <div className="row">
+        <ProgressTracker currentStep={0} />
+          <div className="col-lg-8">
+            {cart.map(item => (
+              <div key={item.id} className="card mb-3 shadow-sm">
+                <div className="row g-0 align-items-center">
+                  <div className="col-md-2">
+                    <img src={item.image} className="img-fluid rounded-start" alt={item.name} />
                   </div>
-
-                  {/* Quantity + price */}
-                  <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                    <div className="btn-group">
-                      <button
-                        className="btn btn-outline-secondary btn-sm"
-                        onClick={() => updateQuantity(item.itemId, -1)}
-                      >
-                        −
-                      </button>
-                      <button className="btn btn-outline-secondary btn-sm" disabled>
-                        {item.quantity}
-                      </button>
-                      <button
-                        className="btn btn-outline-secondary btn-sm"
-                        onClick={() => updateQuantity(item.itemId, 1)}
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <div className="fw-semibold">
-                      ₹{getItemTotal(item)}
+                  <div className="col-md-7">
+                    <div className="card-body p-3">
+                      <h5 className="card-title mb-2">{item.name}</h5>
+                      <div className="d-flex gap-3 mb-2 text-muted">
+                        <span><FaCalendarAlt /> {item.date}</span>
+                        <span><FaClock /> {item.time}</span>
+                      </div>
+                      <div className="d-flex align-items-center gap-2">
+                        <button className="btn btn-outline-secondary btn-sm" onClick={() => decreaseQty(item.id)}><FaMinus /></button>
+                        <span className="fw-bold">{item.quantity}</span>
+                        <button className="btn btn-outline-secondary btn-sm" onClick={() => increaseQty(item.id)}><FaPlus /></button>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Date & Time */}
-                  <div className="row g-2">
-                    <div className="col-6">
-                      <input
-                        type="date"
-                        className="form-control form-control-sm"
-                        value={item.date}
-                        onChange={(e) =>
-                          updateDate(item.itemId, e.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="col-6">
-                      <input
-                        type="time"
-                        className="form-control form-control-sm"
-                        value={item.time}
-                        onChange={(e) =>
-                          updateTime(item.itemId, e.target.value)
-                        }
-                      />
-                    </div>
+                  <div className="col-md-3 text-end pe-3">
+                    <button className="btn btn-link text-danger p-0 mb-2" onClick={() => {
+                      if (window.confirm('Remove this item from cart?')) deleteItem(item.id);
+                    }}><FaTrashAlt size={20} /></button>
+                    <p className="fw-bold fs-5">₹{item.price * item.quantity}</p>
                   </div>
                 </div>
-              ))}
-
-              {/* Cart total */}
-              <div className="d-flex justify-content-between align-items-center border-top pt-3">
-                <h6 className="mb-0">Total Amount</h6>
-                <h5 className="mb-0 fw-bold">₹{cartTotal}</h5>
               </div>
-            </div>
+            ))}
+          </div>
 
-            <div className="card-footer bg-white">
-      <button
-        className="btn btn-success w-100 fw-semibold"
-        onClick={handleConfirmBooking}
-      >
-        Confirm Booking
-      </button>
-    </div>
+          {/* Order Summary */}
+          <div className="col-lg-4">
+            <div className="card shadow-sm p-3 mb-3">
+              <h5 className="fw-bold mb-3">Order Summary</h5>
+              <div className="d-flex justify-content-between mb-2">
+                <span>Subtotal</span>
+                <span>₹{subtotal.toFixed(2)}</span>
+              </div>
+              <hr />
+              <div className="d-flex justify-content-between fw-bold fs-5">
+                <span>Total</span>
+                <span>₹{total.toFixed(2)}</span>
+              </div>
+              <button className="btn btn-danger w-100 mt-3" onClick={handleCheckout}>Proceed to Checkout</button>
+              <button className="btn btn-outline-secondary w-100 mt-2" onClick={() => navigate("/salonList")}>Continue Browsing</button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

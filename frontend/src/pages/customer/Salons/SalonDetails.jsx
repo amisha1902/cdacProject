@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
   Row,
@@ -15,8 +15,78 @@ import {
 } from "react-bootstrap";
 import { StarFill } from "react-bootstrap-icons";
 
+// ================= SLOT MODAL COMPONENT =================
+const SlotModal = ({ show, onClose, availableDates, availableSlots, onSelectSlot }) => {
+  const [selectedDate, setSelectedDate] = useState(availableDates[0]);
+  const [selectedTime, setSelectedTime] = useState("");
+
+  // reset time when date changes
+  useEffect(() => {
+    setSelectedTime("");
+  }, [selectedDate]);
+
+  const handleProceed = () => {
+    if (!selectedDate || !selectedTime) return;
+    onSelectSlot({ date: selectedDate, time: selectedTime });
+    onClose();
+  };
+
+  if (!availableDates || availableDates.length === 0) return null;
+
+  return (
+    <Modal show={show} onHide={onClose} centered>
+      <Modal.Header closeButton>
+        <Modal.Title>Select your booking details</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {/* ================= DATES ROW ================= */}
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          {availableDates.map((date) => (
+            <Button
+              key={date}
+              size="sm"
+              variant={selectedDate === date ? "dark" : "outline-dark"}
+              onClick={() => setSelectedDate(date)}
+            >
+              {new Date(date).toLocaleDateString("en-US", {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })}
+            </Button>
+          ))}
+        </div>
+
+        {/* ================= TIME SLOTS ================= */}
+        <div className="d-flex flex-wrap gap-2 mb-3">
+          {availableSlots[selectedDate]?.map((time) => (
+            <Button
+              key={time}
+              size="sm"
+              variant={selectedTime === time ? "dark" : "outline-dark"}
+              onClick={() => setSelectedTime(time)}
+            >
+              {time}
+            </Button>
+          ))}
+        </div>
+
+        <Button
+          className="w-100 bg-dark rounded-pill text-white border-dark"
+          disabled={!selectedTime}
+          onClick={handleProceed}
+        >
+          Proceed to Cart
+        </Button>
+      </Modal.Body>
+    </Modal>
+  );
+};
+
+// ================= MAIN COMPONENT =================
 const SalonDetails = () => {
   const { salonId } = useParams();
+  const navigate = useNavigate();
 
   const [salon, setSalon] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -26,7 +96,7 @@ const SalonDetails = () => {
   const [loadingSalon, setLoadingSalon] = useState(true);
   const [loadingServices, setLoadingServices] = useState(false);
 
-  /* ================= LIGHTBOX MODAL ================= */
+  // ================= LIGHTBOX MODAL =================
   const [showGallery, setShowGallery] = useState(false);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
@@ -35,16 +105,77 @@ const SalonDetails = () => {
     setShowGallery(true);
   };
   const closeGallery = () => setShowGallery(false);
-
   const nextImage = () =>
     setCurrentImageIdx((prev) => (prev + 1) % salon.galleryImages.length);
   const prevImage = () =>
     setCurrentImageIdx(
-      (prev) =>
-        (prev - 1 + salon.galleryImages.length) % salon.galleryImages.length
+      (prev) => (prev - 1 + salon.galleryImages.length) % salon.galleryImages.length
     );
 
-  /* ================= SALON DETAILS ================= */
+  // ================= SLOT MODAL =================
+  const [showSlotModal, setShowSlotModal] = useState(false);
+  const [availableDates, setAvailableDates] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState({});
+  const [selectedService, setSelectedService] = useState(null);
+
+  const handleAddToCartClick = async (service) => {
+    try {
+      setSelectedService(service);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `/api/salons/${salonId}/services/${service.serviceId}/availability`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // transform API response to dates + slots format
+      const dates = [...new Set(res.data.map((s) => s.date))];
+      const slotsMap = {};
+      dates.forEach((date) => {
+        slotsMap[date] = res.data
+          .filter((s) => s.date === date)
+          .map((s) => s.startTime);
+      });
+
+      setAvailableDates(dates);
+      setAvailableSlots(slotsMap);
+      setShowSlotModal(true);
+    } catch (err) {
+      console.error("Failed to fetch slots:", err);
+      alert("Unable to fetch slots. Try again later.");
+    }
+  };
+
+  const handleSlotSelect = async (slot) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
+
+      if (!userId || !token) {
+        navigate("/login");
+        return;
+      }
+
+      await axios.post(
+        `/api/cart/addToCart?userId=${userId}`,
+        {
+          serviceId: selectedService.serviceId,
+          quantity: 1,
+          date: slot.date,
+          time: slot.time,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setShowSlotModal(false);
+      alert("Service added to cart!");
+      navigate("/cart");
+    } catch (err) {
+      console.error("Failed to add to cart:", err);
+      alert("Failed to add to cart. Try again.");
+    }
+  };
+
+  // ================= SALON DETAILS =================
   useEffect(() => {
     const fetchSalon = async () => {
       try {
@@ -63,7 +194,7 @@ const SalonDetails = () => {
     fetchSalon();
   }, [salonId]);
 
-  /* ================= SERVICES BY CATEGORY ================= */
+  // ================= SERVICES BY CATEGORY =================
   useEffect(() => {
     if (!selectedCategoryId) return;
 
@@ -149,7 +280,6 @@ const SalonDetails = () => {
                     src={img}
                     style={{ objectFit: "cover", height: "150px" }}
                   />
-                  {/* Overlay text on last image */}
                   {isLast && (
                     <div
                       className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
@@ -253,6 +383,7 @@ const SalonDetails = () => {
                             size="sm"
                             className="rounded-pill"
                             style={{ backgroundColor: "#dc3545", border: "none" }}
+                            onClick={() => handleAddToCartClick(service)}
                           >
                             Add to Cart
                           </Button>
@@ -267,6 +398,15 @@ const SalonDetails = () => {
         </Col>
       </Row>
 
+      {/* ================= SLOT SELECTION MODAL ================= */}
+      <SlotModal
+        show={showSlotModal}
+        onClose={() => setShowSlotModal(false)}
+        availableDates={availableDates}
+        availableSlots={availableSlots}
+        onSelectSlot={handleSlotSelect}
+      />
+
       {/* ================= LIGHTBOX MODAL ================= */}
       <Modal
         show={showGallery}
@@ -276,13 +416,13 @@ const SalonDetails = () => {
         backdrop="static"
       >
         <Modal.Body className="p-0 position-relative">
-         <Button
-    variant="light"
-    onClick={closeGallery}
-    className="position-absolute top-0 end-0 m-2 rounded-circle border"
-  >
-    ✕
-  </Button>
+          <Button
+            variant="light"
+            onClick={closeGallery}
+            className="position-absolute top-0 end-0 m-2 rounded-circle border"
+          >
+            ✕
+          </Button>
           <img
             src={salon.galleryImages[currentImageIdx]}
             alt="Gallery"
