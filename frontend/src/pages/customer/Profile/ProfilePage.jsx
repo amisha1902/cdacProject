@@ -26,10 +26,16 @@ const ProfilePage = () => {
 
   /* 🔐 LOAD PROFILE */
   useEffect(() => {
-    getProfile()
-      .then(res => setProfile(res.data))
-      .catch(() => notify.error("Failed to load profile"));
-  }, []);
+  getProfile()
+    .then(res => {
+      console.log("Profile Data received:", res.data.profileImage); // 
+      setProfile(res.data);
+    })
+    .catch((err) => {
+      console.error("Profile Load Error:", err); // 
+      notify.error("Failed to load profile");
+    });
+}, []);
 
   const initials =
     (profile.firstName?.charAt(0).toUpperCase() || "") +
@@ -58,13 +64,28 @@ const ProfilePage = () => {
     }
   };
 
-  /* IMAGE UPLOAD */
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    await uploadProfileImage(userId, file);
-    window.location.reload();
-  };
+  /* IMAGE UPLOAD HANDLER */
+const handleImageUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  try {
+    const res = await uploadProfileImage(userId, file);
+    // Assuming backend returns the new filename in res.data.message
+    console.log('resss', res);
+    
+    const newImageName = res.data.message; 
+    
+    setProfile((prev) => ({
+      ...prev,
+      profileImage: newImageName
+    }));
+    
+    notify.success("Photo updated successfully");
+  } catch (err) {
+    notify.error("Failed to upload image");
+  }
+};
 
   return (
     <div className="container py-5" style={{ maxWidth: 980 }}>
@@ -76,7 +97,7 @@ const ProfilePage = () => {
           <div className="card shadow-sm border-0 text-center p-4">
             {profile.profileImage ? (
               <img
-                src={`http://localhost:8080/images/${profile.profileImage}`}
+              src={`http://localhost:8080/uploads/profile-images/${profile.profileImage}`}
                 alt="profile"
                 className="rounded-circle mx-auto mb-3"
                 style={{ width: 96, height: 96, objectFit: "cover" }}

@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder; 
     private final JwtUtil jwtUtil;
-
+    private static final String UPLOAD_DIR = "uploads/";
 
     @Override
     public List<UserResp> getAllUsers() {
@@ -121,7 +121,6 @@ public class UserServiceImpl implements UserService {
     }
     
     
-    private static final String UPLOAD_DIR = "uploads/profile-images/";
 
     @Override
     public ApiResponse updateProfile(Integer id, UpdateProfileDTO dto) {
@@ -154,19 +153,26 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            Files.createDirectories(Paths.get(UPLOAD_DIR));
+            // Ensure directory exists
+            Path uploadPath = Paths.get("uploads");
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
 
-            String fileName = id + "_" + file.getOriginalFilename();
-            Path path = Paths.get(UPLOAD_DIR + fileName);
+            // Create unique filename
+            String fileName = id + "_" + file.getOriginalFilename();            Path path = uploadPath.resolve(fileName);
 
+            // Save file to disk
             Files.write(path, file.getBytes());
 
+            // UPDATE DATABASE
             user.setProfileImage(fileName);
+            userRepository.save(user); 
 
-            return new ApiResponse("Profile image uploaded", "SUCCESS");
+            return new ApiResponse(fileName, "SUCCESS"); // Return filename to frontend
 
         } catch (Exception e) {
-            throw new ApiException("Image upload failed");
+            throw new ApiException("Image upload failed: " + e.getMessage());
         }
     }
 
@@ -174,7 +180,7 @@ public class UserServiceImpl implements UserService {
 	public ProfileDTO getProfile(Integer id) {
 		User user = userRepository.findById(id)
 	            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
+    System.out.println(user);
 	    return modelMapper.map(user, ProfileDTO.class);
 	}
 }

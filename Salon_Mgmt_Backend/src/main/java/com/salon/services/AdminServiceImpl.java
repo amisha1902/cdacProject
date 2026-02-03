@@ -59,33 +59,46 @@ public class AdminServiceImpl implements AdminService {
                 ))
                 .toList();
     }
+//    @Override
+//    public void approveOwner(Integer userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if (user.getUserRole() != UserRole.OWNER) {
+//            throw new RuntimeException("User is not an OWNER");
+//        }
+//
+//        user.setIsActive(true);
+//        userRepository.save(user);
+//    }
+//
+//    @Override
+//    public void rejectOwner(Integer userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        if (user.getUserRole() != UserRole.OWNER) {
+//            throw new RuntimeException("User is not an OWNER");
+//        }
+//
+//        // keep inactive
+//        user.setIsActive(false);
+//        userRepository.save(user);
+//    }
     @Override
+    @Transactional
     public void approveOwner(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user.getUserRole() != UserRole.OWNER) {
-            throw new RuntimeException("User is not an OWNER");
-        }
-
-        user.setIsActive(true);
-        userRepository.save(user);
+        int updated = userRepository.activateUser(userId);
+        if (updated == 0) throw new ResourceNotFoundException("User not found");
     }
 
     @Override
+    @Transactional
     public void rejectOwner(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        if (user.getUserRole() != UserRole.OWNER) {
-            throw new RuntimeException("User is not an OWNER");
-        }
-
-        // keep inactive
-        user.setIsActive(false);
-        userRepository.save(user);
+        int updated = userRepository.deactivateUser(userId);
+        if (updated == 0) throw new ResourceNotFoundException("User not found");
     }
-    
+
     
     //=========new customer======
     @Override
@@ -103,21 +116,36 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
     }
 
+//    @Override
+//    public void blockCustomer(Integer userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//
+//        user.setIsActive(false);
+//        userRepository.save(user);
+//    }
+//
+//    @Override
+//    public void unblockCustomer(Integer userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//
+//        user.setIsActive(true);
+//        userRepository.save(user);
+//    }
+   
     @Override
+    @Transactional
     public void blockCustomer(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-        user.setIsActive(false);
-        userRepository.save(user);
+        int updated = userRepository.deactivateUser(userId);
+        if (updated == 0) throw new ResourceNotFoundException("Customer not found");
     }
 
     @Override
+    @Transactional
     public void unblockCustomer(Integer userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-
-        user.setIsActive(true);
-        userRepository.save(user);
+        int updated = userRepository.activateUser(userId);
+        if (updated == 0) throw new ResourceNotFoundException("Customer not found");
     }
+
 }

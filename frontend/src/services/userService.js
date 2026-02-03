@@ -40,8 +40,12 @@ export const updateProfile = (id, data) =>
 export const changePassword = (id, data) =>
   axios.put(`/users/change-password/${id}`, data);
 
-export const uploadProfileImage = (id, file) => {
-  const formData = new FormData();
-  formData.append("image", file);
-  return axios.post(`/users/upload-image/${id}`, formData);
-};
+export const uploadProfileImage = async (id, file) => {
+    const formData = new FormData();
+    // This key "image" MUST match @RequestParam("image") in Java
+    formData.append("image", file); 
+
+    return axios.post(`${API_URL}/upload-image/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+    });
+  }
