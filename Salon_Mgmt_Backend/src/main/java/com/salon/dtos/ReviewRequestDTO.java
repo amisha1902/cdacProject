@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ReviewRequestDTO {
 
     @NotNull(message = "Booking ID is required")
-    private Integer bookingId;
+    private Long bookingId;
 
     @NotNull(message = "Rating is required")
     @Min(value = 1, message = "Rating must be at least 1")

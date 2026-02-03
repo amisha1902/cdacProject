@@ -9,5 +9,6 @@ import lombok.Getter;
 public class CategoryWithServices {
     private Integer categoryId;
     private String categoryName;
-//    private List<ServiceResponse> services;
+    private String description;
+    private List<ServiceResponse> services;
 }

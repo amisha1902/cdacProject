@@ -20,10 +20,11 @@ public class SlotGenerateController {
     private final SlotGenerationService slotGenerationService;
 
     @PostMapping("/internal/slots/generate-now")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OWNER')")
     public ResponseEntity<?> forceGenerate() {
-        slotGenerationService.generateSlotsForDateRange(LocalDate.now(), LocalDate.now().plusDays(1));
-        return ResponseEntity.ok("Slots regenerated");
+        // Generate slots for next 30 days
+        slotGenerationService.generateSlotsForDateRange(LocalDate.now(), LocalDate.now().plusDays(30));
+        return ResponseEntity.ok("Slots generated successfully for next 30 days");
     }
 
 }

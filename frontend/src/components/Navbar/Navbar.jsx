@@ -71,8 +71,18 @@ const Navbar = () => {
         const { latitude, longitude } = pos.coords;
         try {
           const res = await fetch(
-            `https://cors-anywhere.herokuapp.com/https://nominatim.openstreetmap.org/reverse?format=json&lat=18.59318&lon=73.70839`
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            {
+              headers: {
+                'Accept': 'application/json',
+              }
+            }
           );
+          
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          
           const data = await res.json();
           const area =
             data.address.suburb ||
@@ -81,11 +91,17 @@ const Navbar = () => {
             data.address.town ||
             data.address.state;
           setLocation(area || "");
+        } catch (error) {
+          console.error("Failed to fetch location:", error);
+          setLocation(""); // Set empty location on error
         } finally {
           setLoadingLocation(false);
         }
       },
-      () => setLoadingLocation(false)
+      () => {
+        console.error("Geolocation permission denied");
+        setLoadingLocation(false);
+      }
     );
   }, [setLocation]);
 
@@ -229,11 +245,7 @@ const Navbar = () => {
                       ? `${profile.firstName} ${profile.lastName}`
                       : "User"
                   }
-                  imageUrl={
-                    profile?.profileImage
-                      ? `http://localhost:8080/images/${profile.profileImage}`
-                      : null
-                  }
+                  imageUrl={profile?.profileImage || null}
                   size={34}
                 />
               </div>

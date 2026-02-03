@@ -47,10 +47,11 @@ import lombok.*;
 	    @Column(length = 255)
 	    private String image;
 	    
-	    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY)
-	    private List<AvailabilitySlot> availabilitySlots;
+    @Builder.Default
+    @Column(name = "service_capacity", nullable = false)
+    private Integer serviceCapacity = 5;
+    
+    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY)
+    private List<AvailabilitySlot> availabilitySlots;
 
-	    
-
-	}
-
+}

@@ -29,6 +29,16 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Frontend validation
+    if (!formData.email) {
+      notify.error("Email is required");
+      return;
+    }
+    if (!formData.password) {
+      notify.error("Password is required");
+      return;
+    }
+
     try {
       const res = await loginUser({
         email: formData.email,
@@ -41,38 +51,27 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("role", role);
+      localStorage.setItem("userRole", role); // For consistency
 
-      // 🔑 IF OWNER → FETCH SALON ID
-      if (role === "OWNER") {
-        const salonRes = await axios.get(
-          "http://localhost:8080/api/owner/salon",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      notify.success("Logged in successfully! Redirecting...");
 
-        localStorage.setItem("salonId", salonRes.data.salonId);
-      }
-
-      notify.success("Logged in successfully");
-
-      // ✅ ROLE BASED REDIRECT
-      if (role === "CUSTOMER") {
-        navigate("/");
-      } else if (role === "OWNER") {
-        navigate("/owner/bookings");
-      } else if (role === "ADMIN") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/login");
-      }
+      // ✅ ROLE BASED REDIRECT with slight delay for toast to show
+      setTimeout(() => {
+        if (role === "CUSTOMER") {
+          navigate("/");
+        } else if (role === "OWNER") {
+          navigate("/owner/dashboard");
+        } else if (role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/login");
+        }
+      }, 1000);
 
     } catch (err) {
-      notify.error(
-        err.response?.data?.message || "Invalid email or password"
-      );
+      const errorMessage = err.response?.data?.message || err.response?.data?.error || "Invalid email or password";
+      notify.error(errorMessage);
+      console.error("Login error:", err);
     }
   };
 

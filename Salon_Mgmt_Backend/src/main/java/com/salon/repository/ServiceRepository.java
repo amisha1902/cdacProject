@@ -6,9 +6,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.salon.entities.ServiceCategory;
 import com.salon.entities.Services;
 
 public interface ServiceRepository extends JpaRepository<Services, Integer> {
+    
+    Long countByCategory(ServiceCategory category);
+    
 /////get services by category
     @Query("""
     		SELECT s FROM Services s

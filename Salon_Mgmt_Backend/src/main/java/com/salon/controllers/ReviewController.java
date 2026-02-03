@@ -1,53 +1,75 @@
-//package com.salon.controllers;
-//
-//import java.util.HashMap;
-//import java.util.Map;
-//
-//import org.springframework.security.core.Authentication;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.DeleteMapping;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.PutMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import com.salon.dtos.ReviewRequestDTO;
-//import com.salon.dtos.ReviewResponseDTO;
-//import com.salon.dtos.ReviewUpdateDTO;
-//import com.salon.services.ReviewService;
-//
-//// import io.swagger.v3.oas.annotations.Operation;
-//// import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-//// import io.swagger.v3.oas.annotations.tags.Tag;
-//import jakarta.validation.Valid;
-//import lombok.RequiredArgsConstructor;
-//
-//@RestController
-//@RequestMapping("/api/reviews")
-//@RequiredArgsConstructor
-//// @Tag(name = "Reviews (Customer)", description = "Customer review management
-//// APIs")
-//public class ReviewController {
-//
-//        private final ReviewService reviewService;
-//
-//        @PostMapping
-//        // @Operation(summary = "Add a new review", description = "Customer can add
-//        // review for a completed booking")
-//        public ResponseEntity<Map<String, Object>> addReview(
-//                        @Valid @RequestBody ReviewRequestDTO requestDTO) {
-//
-//                // Extract customer ID (For testing without security)
-//                Integer customerId = 1;
+package com.salon.controllers;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.salon.dtos.ReviewRequestDTO;
+import com.salon.dtos.ReviewResponseDTO;
+import com.salon.services.ReviewServiceImpl;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@RestController
+@RequestMapping("/api/reviews")
+@RequiredArgsConstructor
+@Slf4j
+public class ReviewController {
+
+    private final ReviewServiceImpl reviewService;
+
+    @PostMapping
+    @SecurityRequirement(name = "bearerAuth")
+    @Operation(summary = "Add a new review", description = "Customer can add review for a completed booking")
+    public ResponseEntity<ReviewResponseDTO> addReview(
+            @Valid @RequestBody ReviewRequestDTO requestDTO) {
+        
+        // TODO: Get userId from authentication context
+        Integer userId = 1; // Temporary
+        
+        ReviewResponseDTO response = reviewService.addReview(requestDTO, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/salon/{salonId}")
+    @Operation(summary = "Get reviews for a salon")
+    public ResponseEntity<List<ReviewResponseDTO>> getReviewsBySalon(@PathVariable Long salonId) {
+        try {
+            log.info("Fetching reviews for salon ID: {}", salonId);
+            List<ReviewResponseDTO> reviews = reviewService.getReviewsBySalon(salonId);
+            log.info("Found {} reviews for salon {}", reviews.size(), salonId);
+            return ResponseEntity.ok(reviews);
+        } catch (Exception e) {
+            log.error("Error fetching reviews for salon {}: {}", salonId, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    @GetMapping("/salon/{salonId}/average")
+    @Operation(summary = "Get average rating for a salon")
+    public ResponseEntity<Double> getAverageRating(@PathVariable Long salonId) {
+        try {
+            log.info("Fetching average rating for salon ID: {}", salonId);
+            Double avg = reviewService.getAverageRatingBySalon(salonId);
+            log.info("Average rating for salon {}: {}", salonId, avg);
+            return ResponseEntity.ok(avg);
+        } catch (Exception e) {
+            log.error("Error fetching average rating for salon {}: {}", salonId, e.getMessage(), e);
+            throw e;
+        }
+    }
+}
 //
 //                ReviewResponseDTO review = reviewService.createReview(requestDTO, customerId);
 //

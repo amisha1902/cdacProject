@@ -103,8 +103,10 @@ public class Salon extends BaseEntity{
     @OneToMany(
     	    mappedBy = "salon",
     	    cascade = CascadeType.ALL,
-    	    orphanRemoval = true
+    	    orphanRemoval = true,
+    	    fetch = FetchType.EAGER
     	)
+    	@com.fasterxml.jackson.annotation.JsonIgnore
     	private List<ServiceCategory> serviceCategories = new ArrayList<>();
 
 }

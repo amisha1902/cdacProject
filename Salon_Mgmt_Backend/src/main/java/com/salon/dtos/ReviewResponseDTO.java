@@ -15,20 +15,11 @@ import lombok.NoArgsConstructor;
 public class ReviewResponseDTO {
 
     private Integer reviewId;
-    private Integer customerId;
     private String customerName;
-    private String customerProfileImage;
-    private Integer salonId;
-    private String salonName;
-    private Integer bookingId;
-    private String bookingNumber;
-    private Integer staffId;
-    private String staffName;
+    private Long bookingId;
     private Integer rating;
     private String comment;
     private List<String> images;
-    private List<ReviewReplyDTO> replies;
-    private Boolean isVerified;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Boolean isVerified;
 }

@@ -89,21 +89,54 @@ const CartPage = () => {
     }
   };
 
+  const clearCart = async () => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    if (!userId || !token) return navigate("/login");
+
+    if (!window.confirm("Are you sure you want to clear all items from your cart? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await axios.delete("http://localhost:8080/api/cart/clear", {
+        params: { userId },
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      setCart([]);
+      setCartId(null);
+      window.dispatchEvent(new Event('cartUpdated'));
+      alert("Cart cleared successfully!");
+    } catch (err) {
+      console.error("Clear cart error:", err);
+      alert(err.response?.data?.message || "Failed to clear cart. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCheckout = async () => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
     if (!userId || !token) return navigate("/login");
     if (!cartId) return alert("Cart not found. Please try again.");
 
+    console.log("Starting checkout for cart:", cartId);
+    console.log("Cart items:", cart);
+
     try {
       setLoading(true);
-      const res = await axios.post("/api/bookings/checkout", { cartId }, {
+      const res = await axios.post("http://localhost:8080/api/bookings/checkout", { cartId }, {
         params: { userId },
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
+      
+      console.log("Checkout successful, booking created:", res.data);
       navigate("/confirmBooking", { state: { booking: res.data } });
     } catch (err) {
-      console.error(err);
+      console.error("Checkout error:", err);
       alert(err.response?.data?.message || "Checkout failed. Please try again.");
     } finally {
       setLoading(false);
@@ -135,9 +168,9 @@ const CartPage = () => {
         {cart.map(item => (
           <div key={item.id} className="card mb-3 shadow-sm rounded-3 border-0">
             <div className="d-flex align-items-center p-3">
-              <div className="me-3" style={{ width: "120px", flexShrink: 0 }}>
+              {/* <div className="me-3" style={{ width: "120px", flexShrink: 0 }}>
                 <img src={item.image} className="img-fluid rounded-3" alt={item.name} />
-              </div>
+              </div> */}
               <div className="flex-fill">
                 <h6 className="fw-semibold mb-2">{item.name}</h6>
                 <div className="d-flex gap-3 text-muted small mb-2">
@@ -175,7 +208,10 @@ const CartPage = () => {
             <span>₹{total.toFixed(2)}</span>
           </div>
           <button className="btn btn-danger w-100 mb-2" onClick={handleCheckout}>Proceed to Checkout</button>
-          <button className="btn btn-outline-secondary w-100" onClick={() => navigate("/salonList")}>Continue Browsing</button>
+          <button className="btn btn-outline-secondary w-100 mb-2" onClick={() => navigate("/salonList")}>Continue Browsing</button>
+          {cart.length > 0 && (
+            <button className="btn btn-outline-danger w-100" onClick={clearCart}>Clear Cart</button>
+          )}
         </div>
       </div>
     </div>

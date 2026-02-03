@@ -14,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.salon.customException.*;
 import com.salon.dtos.*;
+import com.salon.entities.Owner;
 import com.salon.entities.User;
 import com.salon.entities.UserRole;
+import com.salon.repository.OwnerRepository;
 import com.salon.repository.UserRepository;
 import com.salon.security.JwtUtil;
 
@@ -28,9 +30,11 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final OwnerRepository ownerRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder; 
     private final JwtUtil jwtUtil;
+    private final CloudinaryService cloudinaryService;
     private static final String UPLOAD_DIR = "uploads/";
 
     @Override
@@ -76,6 +80,12 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
         User savedUser = userRepository.save(user);
+
+        // 🏪 CREATE OWNER RECORD
+        Owner owner = new Owner();
+        owner.setUser(savedUser);
+        owner.setIsApproved(false);
+        ownerRepository.save(owner);
 
         return new ApiResponse(
                 "New owner added with ID=" + savedUser.getUserId(),
@@ -130,6 +140,8 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(dto.getFirstName());
         user.setLastName(dto.getLastName());
         user.setPhone(dto.getPhone());
+        
+        userRepository.save(user);
 
         return new ApiResponse("Profile updated successfully", "SUCCESS");
     }
@@ -144,6 +156,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
         return new ApiResponse("Password changed successfully", "SUCCESS");
     }
 
@@ -153,23 +166,14 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-            // Ensure directory exists
-            Path uploadPath = Paths.get("uploads");
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            // Upload to Cloudinary
+            String imageUrl = cloudinaryService.uploadImage(file, "profile-images");
 
-            // Create unique filename
-            String fileName = id + "_" + file.getOriginalFilename();            Path path = uploadPath.resolve(fileName);
-
-            // Save file to disk
-            Files.write(path, file.getBytes());
-
-            // UPDATE DATABASE
-            user.setProfileImage(fileName);
+            // UPDATE DATABASE with Cloudinary URL
+            user.setProfileImage(imageUrl);
             userRepository.save(user); 
 
-            return new ApiResponse(fileName, "SUCCESS"); // Return filename to frontend
+            return new ApiResponse(imageUrl, "SUCCESS"); // Return Cloudinary URL to frontend
 
         } catch (Exception e) {
             throw new ApiException("Image upload failed: " + e.getMessage());

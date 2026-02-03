@@ -9,10 +9,12 @@ import com.salon.dtos.CustomerAdminDTO;
 import com.salon.dtos.OwnerAdminDTO;
 import com.salon.entities.Customer;
 import com.salon.entities.Owner;
+import com.salon.entities.Salon;
 import com.salon.entities.User;
 import com.salon.entities.UserRole;
 import com.salon.repository.CustomerRepository;
 import com.salon.repository.OwnerRepository;
+import com.salon.repository.SalonRepository;
 import com.salon.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -26,6 +28,7 @@ public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final OwnerRepository ownerRepository;
+    private final SalonRepository salonRepository;
 
     /* ================= CUSTOMER ================= */
 
@@ -146,6 +149,31 @@ public class AdminServiceImpl implements AdminService {
     public void unblockCustomer(Integer userId) {
         int updated = userRepository.activateUser(userId);
         if (updated == 0) throw new ResourceNotFoundException("Customer not found");
+    }
+
+    /* ================= SALON ================= */
+
+    @Override
+    public List<Salon> getAllSalons() {
+        return salonRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public void approveSalon(Long salonId) {
+        Salon salon = salonRepository.findById(salonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Salon not found"));
+        salon.setIsApproved(1); // 1 = Approved
+        salonRepository.save(salon);
+    }
+
+    @Override
+    @Transactional
+    public void rejectSalon(Long salonId) {
+        Salon salon = salonRepository.findById(salonId)
+                .orElseThrow(() -> new ResourceNotFoundException("Salon not found"));
+        salon.setIsApproved(2); // 2 = Rejected
+        salonRepository.save(salon);
     }
 
 }

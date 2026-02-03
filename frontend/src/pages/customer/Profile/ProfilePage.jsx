@@ -28,7 +28,8 @@ const ProfilePage = () => {
   useEffect(() => {
   getProfile()
     .then(res => {
-      console.log("Profile Data received:", res.data.profileImage); // 
+      console.log("Profile Data received:", res.data);
+      console.log("Profile Image:", res.data.profileImage);
       setProfile(res.data);
     })
     .catch((err) => {
@@ -71,18 +72,28 @@ const handleImageUpload = async (e) => {
 
   try {
     const res = await uploadProfileImage(userId, file);
-    // Assuming backend returns the new filename in res.data.message
-    console.log('resss', res);
+    console.log('Upload response:', res);
     
+    // Backend returns filename in res.data.message
     const newImageName = res.data.message; 
     
+    // Update profile state with new image
     setProfile((prev) => ({
       ...prev,
       profileImage: newImageName
     }));
     
     notify.success("Photo updated successfully");
+    
+    // Optionally refetch profile to sync with backend
+    try {
+      const profileRes = await getProfile();
+      setProfile(profileRes.data);
+    } catch (err) {
+      console.error("Failed to refresh profile after upload", err);
+    }
   } catch (err) {
+    console.error("Upload error:", err);
     notify.error("Failed to upload image");
   }
 };
@@ -96,12 +107,19 @@ const handleImageUpload = async (e) => {
         <div className="col-md-4">
           <div className="card shadow-sm border-0 text-center p-4">
             {profile.profileImage ? (
-              <img
-              src={`http://localhost:8080/uploads/profile-images/${profile.profileImage}`}
-                alt="profile"
-                className="rounded-circle mx-auto mb-3"
-                style={{ width: 96, height: 96, objectFit: "cover" }}
-              />
+              <>
+                <img
+                  src={profile.profileImage}
+                  alt="profile"
+                  className="rounded-circle mx-auto mb-3"
+                  style={{ width: 96, height: 96, objectFit: "cover" }}
+                  onLoad={() => console.log("Image loaded:", profile.profileImage)}
+                  onError={(e) => {
+                    console.error("Image load failed:", profile.profileImage, e);
+                    console.error("URL attempted:", e.target.src);
+                  }}
+                />
+              </>
             ) : (
               <div
                 className="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center mx-auto mb-3"

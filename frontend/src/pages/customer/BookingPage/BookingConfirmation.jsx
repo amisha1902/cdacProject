@@ -47,51 +47,134 @@ const BookingConfirmation = () => {
 
   const handlePayNow = async () => {
     const token = localStorage.getItem("token");
-    if (!booking?.bookingId) return;
+    if (!booking?.bookingId) {
+      alert("Booking information not found. Please try again.");
+      return;
+    }
+
+    console.log("Starting payment for booking:", booking);
 
     try {
+      // Create Razorpay order
       const res = await axios.post(
         "http://localhost:8080/api/payments/create",
         { bookingId: booking.bookingId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      console.log("Razorpay order created:", res.data);
       const { razorpayOrderId, key, amount, currency } = res.data;
+
+      // Check if Razorpay is loaded
+      if (!window.Razorpay) {
+        console.error("Razorpay script not loaded");
+        alert("Payment gateway not available. Please refresh the page and try again.");
+        return;
+      }
 
       const options = {
         key,
         amount,
         currency,
-        name: "Salon Booking",
-        description: `Booking Payment #${booking.bookingId}`,
+        name: "Salon Booking Payment",
+        description: `Payment for Booking #${booking.bookingId}`,
         order_id: razorpayOrderId,
         handler: async function (response) {
+          console.log("Payment successful:", response);
           try {
             await axios.post(
               "http://localhost:8080/api/payments/verify",
               {
-                bookingId: booking.bookingId,
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
                 razorpaySignature: response.razorpay_signature,
               },
               { headers: { Authorization: `Bearer ${token}` } }
             );
-            alert("Payment successful 🎉");
-            navigate("/bookings");
+            
+            // Trigger cart update event to refresh navbar cart count
+            window.dispatchEvent(new Event('cartUpdated'));
+            // Trigger booking update event for owner dashboard
+            window.dispatchEvent(new Event('bookingUpdated'));
+            
+            alert("Payment successful! 🎉");
+            navigate("/my-bookings");
           } catch (verifyErr) {
-            console.error("Verification failed", verifyErr);
+            console.error("Payment verification failed", verifyErr);
             alert("Payment verification failed. Please contact support.");
           }
         },
-        theme: { color: "#20B2AA" }, // subtle
+        prefill: {
+          name: `${booking.customerFirstName || ""} ${booking.customerLastName || ""}`.trim(),
+          email: booking.customerEmail || "",
+          contact: booking.customerPhone || ""
+        },
+        theme: { 
+          color: "#667eea"
+        },
+        modal: {
+          ondismiss: function() {
+            console.log("Payment modal closed by user");
+          }
+        },
+        retry: {
+          enabled: true,
+          max_count: 3
+        }
       };
 
+      console.log("Opening Razorpay with options:", options);
       const razor = new window.Razorpay(options);
+      
+      razor.on('payment.failed', function (response) {
+        console.error("Payment failed:", response.error);
+        alert(`Payment failed: ${response.error.description || 'Please try again'}`);
+      });
+      
       razor.open();
     } catch (err) {
-      console.error("Order creation error", err);
-      alert("Failed to initiate payment. Please try again.");
+      console.error("Payment initiation failed", err);
+      
+      // Fallback to demo payment if Razorpay order creation fails
+      const useDemo = window.confirm(
+        "Payment gateway is currently unavailable. Would you like to proceed with demo payment?"
+      );
+      
+      if (useDemo) {
+        await processDemoPayment();
+      }
+    }
+  };
+
+  const processDemoPayment = async () => {
+    const token = localStorage.getItem("token");
+    
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/payments/process-demo",
+        {
+          bookingId: booking.bookingId,
+          amount: booking.totalAmount,
+          paymentMethod: "DEMO",
+          transactionId: `DEMO_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        // Trigger cart update event to refresh navbar cart count
+        window.dispatchEvent(new Event('cartUpdated'));
+        // Trigger booking update event for owner dashboard
+        window.dispatchEvent(new Event('bookingUpdated'));
+        
+        alert("Demo payment successful! 🎉\n\nTransaction ID: " + response.data.transactionId);
+        navigate("/my-bookings");
+      } else {
+        alert("Payment failed: " + response.data.message);
+      }
+    } catch (err) {
+      console.error("Demo payment processing error", err);
+      alert("Payment processing failed. Please try again or contact support.");
     }
   };
 

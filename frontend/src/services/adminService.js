@@ -12,8 +12,7 @@ export const blockCustomer = (userId) =>
 export const unblockCustomer = (userId) =>
   api.put(`/api/admin/customer/${userId}/unblock`);
 
-
-
+// Get pending owners
 export const getOwners = () =>
   api.get("/api/admin/owners/pending");
 
@@ -22,3 +21,15 @@ export const approveOwner = (userId) =>
 
 export const rejectOwner = (userId) =>
   api.put(`/api/admin/owners/${userId}/reject`);
+
+// Get all salons
+export const getAllSalons = () =>
+  api.get("/api/admin/salons");
+
+// Approve salon
+export const approveSalon = (salonId) =>
+  api.put(`/api/admin/salons/${salonId}/approve`);
+
+// Reject salon
+export const rejectSalon = (salonId) =>
+  api.put(`/api/admin/salons/${salonId}/reject`);

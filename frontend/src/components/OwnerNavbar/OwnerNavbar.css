@@ -1,0 +1,146 @@
+.owner-navbar {
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.owner-navbar-header {
+  padding: 30px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.owner-navbar-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.owner-navbar-header p {
+  margin: 5px 0 0;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.owner-nav-links {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+}
+
+.owner-nav-links::-webkit-scrollbar {
+  width: 5px;
+}
+
+.owner-nav-links::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  font-size: 15px;
+}
+
+.nav-link svg {
+  margin-right: 15px;
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.nav-link:hover svg {
+  transform: translateX(5px);
+}
+
+.nav-link.active {
+  background: linear-gradient(90deg, rgba(102, 126, 234, 0.2) 0%, transparent 100%);
+  color: white;
+  border-left: 4px solid #667eea;
+}
+
+.nav-link.active svg {
+  color: #667eea;
+}
+
+.owner-navbar-footer {
+  padding: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  border: 1px solid rgba(255, 59, 48, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.logout-btn svg {
+  margin-right: 10px;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 59, 48, 0.2);
+  border-color: #ff3b30;
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .owner-navbar {
+    width: 70px;
+  }
+
+  .owner-navbar-header h2,
+  .owner-navbar-header p,
+  .nav-link span {
+    display: none;
+  }
+
+  .nav-link {
+    justify-content: center;
+    padding: 15px;
+  }
+
+  .nav-link svg {
+    margin: 0;
+  }
+
+  .logout-btn span {
+    display: none;
+  }
+
+  .logout-btn svg {
+    margin: 0;
+  }
+}

@@ -41,7 +41,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
                 // ✅ PRE-FLIGHT
-                .requestMatchers(HttpMethod.OPTIONS, "/**", "/uploads/**").permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                // ✅ STATIC FILES & UPLOADS
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
 
                 // ✅ SWAGGER
                 .requestMatchers(
@@ -64,7 +67,8 @@ public class SecurityConfig {
                         "/api/salons/**",
                         "/api/services/**",
                         "/api/categories/**",
-                        "/api/slots/**"
+                        "/api/slots/**",
+                        "/api/reviews/salon/**"
                 ).permitAll()
 
                 // ✅ OWNER (🔥 MISSING EARLIER 🔥)

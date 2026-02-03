@@ -1,11 +1,6 @@
 package com.salon.dtos;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.salon.entities.AvailabilitySlot;
-import com.salon.entities.Services;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,6 +12,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class ServiceResponse {
 
     private Integer serviceId;
@@ -25,8 +21,6 @@ public class ServiceResponse {
     private Integer durationMinutes;
     private String description;
     private String image;
-//    private Boolean isAvailable;
-//    private List<AvailabilitySlotResponse> slots;
-
-    
+    private Boolean isAvailable;
+    private Integer serviceCapacity;
 }

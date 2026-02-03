@@ -27,13 +27,52 @@ const OwnerRegister = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Frontend validation
+    if (!formData.firstName.trim()) {
+      notify.error("First name is required");
+      return;
+    }
+    if (formData.firstName.length < 3 || formData.firstName.length > 20) {
+      notify.error("First name must be 3-20 characters");
+      return;
+    }
+    if (!formData.email.trim()) {
+      notify.error("Email is required");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      notify.error("Please enter a valid email address");
+      return;
+    }
+    if (!formData.phone.trim()) {
+      notify.error("Phone number is required");
+      return;
+    }
+    const phoneRegex = /^[6-9]\d{9}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      notify.error("Please enter a valid 10-digit Indian phone number starting with 6-9");
+      return;
+    }
+    if (!formData.password) {
+      notify.error("Password is required");
+      return;
+    }
+    if (formData.password.length < 6) {
+      notify.error("Password must be at least 6 characters");
+      return;
+    }
+
     try {
-      await registerOwner(formData);
-      notify.success("Account created successfully");
-      navigate("/login");
+      const response = await registerOwner(formData);
+      notify.success("Owner account created successfully! Redirecting to login...");
+      
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
     } catch (err) {
-      console.error(err);
-      notify.error(err.response?.data?.message || "Registration failed");
+      console.error("Registration error:", err);
+      const errorMsg = err.response?.data?.message || err.response?.data?.error || "Registration failed. Please try again.";
+      notify.error(errorMsg);
     }
   };
 
@@ -55,9 +94,11 @@ const OwnerRegister = () => {
                 <input
                   type="text"
                   name="firstName"
-                  placeholder="Enter first name"
+                  placeholder="Enter first name (3-20 chars)"
                   value={formData.firstName}
                   onChange={handleChange}
+                  minLength={3}
+                  maxLength={20}
                   required
                 />
               </div>
@@ -89,11 +130,14 @@ const OwnerRegister = () => {
             <div className="form-group">
               <label>Phone</label>
               <input
-                type="text"
+                type="tel"
                 name="phone"
-                placeholder="Enter phone number"
+                placeholder="10-digit number (e.g., 9876543210)"
                 value={formData.phone}
                 onChange={handleChange}
+                pattern="[6-9][0-9]{9}"
+                maxLength={10}
+                title="Please enter a valid 10-digit Indian phone number starting with 6-9"
                 required
               />
             </div>
@@ -104,9 +148,10 @@ const OwnerRegister = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  placeholder="Create a secure password"
+                  placeholder="Create a secure password (min 6 chars)"
                   value={formData.password}
                   onChange={handleChange}
+                  minLength={6}
                   required
                 />
                 <span onClick={() => setShowPassword(!showPassword)}>

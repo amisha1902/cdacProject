@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../../services/api";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Container,
@@ -92,9 +92,12 @@ const SalonDetails = () => {
   const [categories, setCategories] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [services, setServices] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
 
   const [loadingSalon, setLoadingSalon] = useState(true);
   const [loadingServices, setLoadingServices] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   // ================= LIGHTBOX MODAL =================
   const [showGallery, setShowGallery] = useState(false);
@@ -121,11 +124,15 @@ const SalonDetails = () => {
   const handleAddToCartClick = async (service) => {
     try {
       setSelectedService(service);
-      const token = localStorage.getItem("token");
-      const res = await axios.get(
-        `/api/salons/${salonId}/services/${service.serviceId}/availability`,
-        { headers: { Authorization: `Bearer ${token}` } }
+      const res = await api.get(
+        `/api/salons/${salonId}/services/${service.serviceId}/availability`
       );
+
+      // Check if there are any available slots
+      if (!res.data || res.data.length === 0) {
+        alert("No available slots for this service at the moment. Please try again later or contact the salon.");
+        return;
+      }
 
       // transform API response to dates + slots format
       const dates = [...new Set(res.data.map((s) => s.date))];
@@ -146,32 +153,67 @@ const SalonDetails = () => {
   };
 
   const handleSlotSelect = async (slot) => {
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+
+    if (!userId || !token) {
+      navigate("/login");
+      return;
+    }
+
     try {
-      const userId = localStorage.getItem("userId");
-      const token = localStorage.getItem("token");
-
-      if (!userId || !token) {
-        navigate("/login");
-        return;
-      }
-
-      await axios.post(
+      await api.post(
         `/api/cart/addToCart?userId=${userId}`,
         {
           serviceId: selectedService.serviceId,
           quantity: 1,
           date: slot.date,
           time: slot.time,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
+        }
       );
 
       setShowSlotModal(false);
+      window.dispatchEvent(new Event('cartUpdated')); // Trigger cart update
       alert("Service added to cart!");
       navigate("/cart");
     } catch (err) {
       console.error("Failed to add to cart:", err);
-      alert("Failed to add to cart. Try again.");
+      
+      // Check if it's a salon validation error
+      if (err.response?.data?.message && err.response.data.message.includes("different salon")) {
+        const confirmClear = window.confirm(
+          "You have services from a different salon in your cart. " +
+          "Would you like to clear your cart and add this service instead?"
+        );
+        
+        if (confirmClear) {
+          try {
+            // Clear the cart first
+            await api.delete(`/api/cart/clear?userId=${userId}`);
+            
+            // Then add the new service
+            await api.post(
+              `/api/cart/addToCart?userId=${userId}`,
+              {
+                serviceId: selectedService.serviceId,
+                quantity: 1,
+                date: slot.date,
+                time: slot.time,
+              }
+            );
+            
+            setShowSlotModal(false);
+            window.dispatchEvent(new Event('cartUpdated')); // Trigger cart update
+            alert("Cart cleared and service added successfully!");
+            navigate("/cart");
+          } catch (clearErr) {
+            console.error("Failed to clear cart and add service:", clearErr);
+            alert("Failed to clear cart and add service. Please try again.");
+          }
+        }
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
     }
   };
 
@@ -179,11 +221,13 @@ const SalonDetails = () => {
   useEffect(() => {
     const fetchSalon = async () => {
       try {
-        const res = await axios.get(`/api/salons/${salonId}`);
+        const res = await api.get(`/api/salons/${salonId}`);
         setSalon(res.data);
         setCategories(res.data.categories || []);
         if (res.data.categories?.length > 0) {
           setSelectedCategoryId(res.data.categories[0].categoryId);
+          // Set services from the first category
+          setServices(res.data.categories[0].services || []);
         }
       } catch (err) {
         console.error("Failed to load salon details", err);
@@ -194,25 +238,36 @@ const SalonDetails = () => {
     fetchSalon();
   }, [salonId]);
 
-  // ================= SERVICES BY CATEGORY =================
+  // ================= FETCH REVIEWS =================
   useEffect(() => {
-    if (!selectedCategoryId) return;
-
-    const fetchServices = async () => {
+    const fetchReviews = async () => {
+      setLoadingReviews(true);
       try {
-        setLoadingServices(true);
-        const res = await axios.get(
-          `/api/categories/${selectedCategoryId}/services`
-        );
-        setServices(res.data || []);
+        const [reviewsRes, avgRes] = await Promise.all([
+          api.get(`/api/reviews/salon/${salonId}`),
+          api.get(`/api/reviews/salon/${salonId}/average`)
+        ]);
+        setReviews(reviewsRes.data || []);
+        setAverageRating(avgRes.data || 0);
       } catch (err) {
-        console.error("Failed to load services", err);
+        console.error("Failed to load reviews", err);
       } finally {
-        setLoadingServices(false);
+        setLoadingReviews(false);
       }
     };
-    fetchServices();
-  }, [selectedCategoryId]);
+    fetchReviews();
+  }, [salonId]);
+
+  // ================= SERVICES BY CATEGORY =================
+  useEffect(() => {
+    if (!selectedCategoryId || !categories.length) return;
+
+    // Find services from the selected category (already loaded from salon details)
+    const selectedCategory = categories.find(cat => cat.categoryId === selectedCategoryId);
+    if (selectedCategory) {
+      setServices(selectedCategory.services || []);
+    }
+  }, [selectedCategoryId, categories]);
 
   if (loadingSalon)
     return (
@@ -231,11 +286,15 @@ const SalonDetails = () => {
           <Row className="align-items-center">
             <Col xs={3} md={2}>
               <Image
-                src={salon.logo}
+                src={salon.logo && salon.logo.startsWith('http') ? salon.logo : (salon.logo ? `http://localhost:8080/${salon.logo}` : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Ccircle cx="40" cy="40" r="40" fill="%23ddd"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Logo%3C/text%3E%3C/svg%3E')}
                 roundedCircle
                 width={80}
                 height={80}
                 alt={salon.salonName}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="80" height="80"%3E%3Ccircle cx="40" cy="40" r="40" fill="%23ddd"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="12" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Logo%3C/text%3E%3C/svg%3E';
+                }}
               />
             </Col>
             <Col>
@@ -346,7 +405,7 @@ const SalonDetails = () => {
           >
             <Card.Body className="p-3">
               <div className="d-flex gap-3">
-                <img
+                {/* <img
                   src={
                     service.image ||
                     "https://via.placeholder.com/100x100?text=Service"
@@ -355,7 +414,7 @@ const SalonDetails = () => {
                   className="rounded object-fit-cover"
                   width="72"
                   height="72"
-                />
+                /> */}
 
                 <div className="flex-grow-1 d-flex flex-column justify-content-between">
                   <div>
@@ -406,6 +465,64 @@ const SalonDetails = () => {
 
 </div>
 </div>
+
+      {/* ================= REVIEWS SECTION ================= */}
+      <Card className="border-0 shadow-sm mt-4 mb-4">
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold mb-0">Customer Reviews</h5>
+            <Badge bg="success" className="d-flex align-items-center gap-1 px-3 py-2">
+              {averageRating.toFixed(1)} <StarFill size={14} /> ({reviews.length})
+            </Badge>
+          </div>
+
+          {loadingReviews ? (
+            <div className="text-center py-4">
+              <Spinner animation="border" size="sm" />
+            </div>
+          ) : reviews.length === 0 ? (
+            <p className="text-muted mb-0">No reviews yet. Be the first to review!</p>
+          ) : (
+            <div className="d-flex flex-column gap-3">
+              {reviews.map((review) => (
+                <Card key={review.reviewId} className="border">
+                  <Card.Body className="p-3">
+                    <div className="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <div className="fw-semibold">{review.customerName || "Customer"}</div>
+                        <div className="d-flex gap-1 mt-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <StarFill
+                              key={star}
+                              size={14}
+                              color={star <= review.rating ? "#ffc107" : "#e4e5e9"}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <small className="text-muted">
+                        {new Date(review.createdAt).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </small>
+                    </div>
+                    {review.comment && (
+                      <p className="text-muted small mb-0">{review.comment}</p>
+                    )}
+                    {review.isVerified && (
+                      <Badge bg="info" className="mt-2" style={{ fontSize: "10px" }}>
+                        Verified
+                      </Badge>
+                    )}
+                  </Card.Body>
+                </Card>
+              ))}
+            </div>
+          )}
+        </Card.Body>
+      </Card>
 
 
       {/* ================= SLOT SELECTION MODAL ================= */}

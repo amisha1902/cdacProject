@@ -45,7 +45,7 @@ export const uploadProfileImage = async (id, file) => {
     // This key "image" MUST match @RequestParam("image") in Java
     formData.append("image", file); 
 
-    return axios.post(`${API_URL}/upload-image/${id}`, formData, {
+    return axios.post(`/users/upload-image/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
     });
   }

@@ -9,10 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.salon.entities.Owner;
 import com.salon.entities.Salon;
 import com.salon.entities.Services;
 
 public interface SalonRepository extends JpaRepository<Salon, Long> {
+    
+    List<Salon> findByOwner(Owner owner);
 ///get all slaonss
     @Query(
         value = """

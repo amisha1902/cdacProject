@@ -1,82 +1,171 @@
+/* ---------- Page Wrapper ---------- */
 .register-page {
   min-height: 100vh;
   background: #f6f3fb;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 24px;
 }
 
+/* ---------- Card Layout ---------- */
 .register-card {
-  width: 500px;
-  background: #fff;
-  padding: 40px;
+  width: 100%;
+  max-width: 920px;
+  background: #ffffff;
   border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  overflow: hidden;
+  padding: 48px;
+  column-gap: 48px;
 }
 
-.register-card h2 {
-  text-align: center;
-  margin-bottom: 5px;
+/* ---------- Left Panel ---------- */
+.register-card > h2 {
+  margin: 0 0 8px 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: #222;
+}
+
+.register-card > hr {
+  margin: 10px 0 14px 0;
+  border: none;
+  border-top: 2px solid #eee;
+  width: 120px;
 }
 
 .subtitle {
-  text-align: center;
+  margin: 0;
+  font-size: 14px;
   color: #777;
-  margin-bottom: 25px;
+  line-height: 1.5;
 }
 
+/* ---------- Right Panel (Form) ---------- */
+.register-card form {
+  padding: 0;
+  margin: 0;
+}
+
+/* ---------- Form Layout ---------- */
 .row {
   display: flex;
-  gap: 20px;
+  gap: 16px;
 }
 
 .form-group {
-  margin-bottom: 20px;
   width: 100%;
+  margin-bottom: 16px;
+}
+
+.form-group:first-child {
+  margin-top: 0;
 }
 
 .form-group label {
-  font-weight: 600;
   display: block;
   margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
 }
 
 .form-group input {
   width: 100%;
-  padding: 14px;
-  border-radius: 30px;
-  border: none;
-  background: #f2f2f2;
+  padding: 13px 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #fafafa;
+  font-size: 14px;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
+.form-group input:focus {
+  outline: none;
+  border-color: #000;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+}
+
+/* ---------- Password Field ---------- */
 .password-box {
   position: relative;
 }
 
+.password-box input {
+  padding-right: 44px;
+}
+
 .password-box span {
   position: absolute;
-  right: 18px;
+  right: 14px;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+  color: #888;
+  font-size: 18px;
 }
 
+.password-box span:hover {
+  color: #000;
+}
+
+/* ---------- Submit Button ---------- */
 .submit-btn {
   width: 100%;
+  margin-top: 12px;
   padding: 14px;
-  border-radius: 30px;
+  border-radius: 999px;
   border: none;
-  background: black;
-  color: white;
-  font-size: 16px;
+  background: #000;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
+.submit-btn:hover {
+  background: #111;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Footer Link ---------- */
 .login-link {
-  margin-top: 15px;
+  margin-top: 16px;
   text-align: center;
+  font-size: 13px;
+  color: #666;
 }
 
 .login-link a {
-  color: red;
+  color: #e11;
+  font-weight: 600;
   text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+  .register-card {
+    grid-template-columns: 1fr;
+    padding: 32px;
+    row-gap: 20px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
 }

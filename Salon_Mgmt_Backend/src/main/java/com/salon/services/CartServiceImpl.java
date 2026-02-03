@@ -81,14 +81,23 @@ public class CartServiceImpl implements CartService {
 		com.salon.entities.Services service  = serviceRepository.findById(dto.getServiceId())
 				.orElseThrow(()-> new RuntimeException("service not found"));
 		
-		//get or creagte cart
+		//get or create cart
 		Cart cart = cartRepository.findCartWithItems(userId)
 				.orElseGet(()->{
 					Cart newCart = new Cart();
 					newCart.setUserId(userId);
-			        newCart.setSalonId(service.getSalon().getSalonId()); // must set something
+			        newCart.setSalonId(service.getSalon().getSalonId());
 					return cartRepository.save(newCart);
 				});
+		
+		// Validate that the service belongs to the same salon as the cart
+		if (!cart.getSalonId().equals(service.getSalon().getSalonId())) {
+			throw new IllegalArgumentException(
+				"Cannot add service from different salon. Current cart contains services from salon ID: " 
+				+ cart.getSalonId() + ", but trying to add service from salon ID: " 
+				+ service.getSalon().getSalonId() + ". Please checkout your current cart first or clear it."
+			);
+		}
 		
 		
 		//check if service with give date and time is duplicated or already present
@@ -232,6 +241,23 @@ return response;
 	    dto.setDate(item.getDate());
 	    dto.setTime(item.getTime());
 	    return dto;
+	}
+	
+	@Override
+	@Transactional
+	public CartResponse clearCart(Integer userId) {
+		Optional<Cart> cartOpt = cartRepository.findCartWithItems(userId);
+		
+		if (cartOpt.isPresent()) {
+			Cart cart = cartOpt.get();
+			// Remove all items
+			cart.getItems().clear();
+			// Delete the cart
+			cartRepository.delete(cart);
+		}
+		
+		// Return empty cart response
+		return new CartResponse(null, java.util.Collections.emptyList(), java.math.BigDecimal.ZERO, 0);
 	}
 
 }

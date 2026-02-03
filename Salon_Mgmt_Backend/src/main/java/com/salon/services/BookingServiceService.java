@@ -20,4 +20,6 @@ public interface BookingServiceService {
     BookingResponse confirmBookingByOwner(Long bookingId);
 
     BookingResponse cancelBookingByOwner(Long bookingId);
+    
+    BookingResponse updateBookingStatus(Long bookingId, String status);
 }

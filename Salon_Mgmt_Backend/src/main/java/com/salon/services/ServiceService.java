@@ -20,7 +20,16 @@ public class ServiceService {
 
         // Map entities to DTO for API response
         return services.stream()
-                .map(sv -> new ServiceResponse(sv.getServiceId(), sv.getServiceName(), sv.getBasePrice(), sv.getDurationMinutes(), sv.getDescription(), sv.getImage()))
+                .map(sv -> ServiceResponse.builder()
+                        .serviceId(sv.getServiceId())
+                        .serviceName(sv.getServiceName())
+                        .basePrice(sv.getBasePrice())
+                        .durationMinutes(sv.getDurationMinutes())
+                        .description(sv.getDescription())
+                        .image(sv.getImage())
+                        .isAvailable(sv.getIsAvailable())
+                        .serviceCapacity(sv.getServiceCapacity())
+                        .build())
                 .toList();
     }
 }

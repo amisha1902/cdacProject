@@ -67,10 +67,14 @@ const SalonList = () => {
             >
               <Card.Img
                 variant="top"
-                src={salon.logo}
+                src={salon.logo && salon.logo.startsWith('http') ? salon.logo : (salon.logo ? `http://localhost:8080/${salon.logo}` : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="160"%3E%3Crect fill="%23ddd" width="160" height="160"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="16" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E')}
                 alt={salon.salonName}
                 className="img-fluid"
                 style={{ height: "160px", objectFit: "cover" }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="160" height="160"%3E%3Crect fill="%23ddd" width="160" height="160"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="16" x="50%25" y="50%25" text-anchor="middle" dy=".3em"%3ENo Image%3C/text%3E%3C/svg%3E';
+                }}
               />
 
               <Card.Body className="d-flex flex-column justify-content-between p-3">

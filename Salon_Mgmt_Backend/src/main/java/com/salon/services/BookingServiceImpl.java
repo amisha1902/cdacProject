@@ -24,6 +24,7 @@ import com.salon.customException.ResourceNotFoundException;
 import com.salon.repository.BookingRepository;
 import com.salon.repository.BookingServiceRepository;
 import com.salon.repository.CartRepository;
+import com.salon.repository.ReviewRepository;
 import com.salon.repository.SalonRepository;
 
 @Service
@@ -34,6 +35,7 @@ public class BookingServiceImpl implements BookingServiceService {
     @Autowired private BookingRepository bookingRepo;
     @Autowired private BookingServiceRepository bookingServiceRepo;
     @Autowired private SalonRepository salonRepo;
+    @Autowired private ReviewRepository reviewRepository;
 
     @Transactional
     public BookingResponse checkout(Integer userId, CheckoutBookingRequest request) {
@@ -211,8 +213,26 @@ public class BookingServiceImpl implements BookingServiceService {
                 .toList();
         res.setServices(services);
         res.setSalonName(booking.getSalon() != null ? booking.getSalon().getSalonName() : null);
+        
+        // Check if booking has a review
+        res.setHasReview(reviewRepository.existsByBooking_BookingId(booking.getBookingId()));
 
         return res;
+    }
+    
+    @Override
+    public BookingResponse updateBookingStatus(Long bookingId, String status) {
+        Booking booking = bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+                
+        try {
+            BookingStatus bookingStatus = BookingStatus.valueOf(status.toUpperCase());
+            booking.setStatus(bookingStatus);
+            bookingRepo.save(booking);
+            return mapToResponse(booking);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid booking status: " + status);
+        }
     }
 
 }

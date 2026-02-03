@@ -24,6 +24,7 @@ import com.salon.entities.enums.PaymentStatus;
 import com.salon.customException.ResourceNotFoundException;
 import com.salon.repository.BookingRepository;
 import com.salon.repository.PaymentRepository;
+import com.salon.repository.CartRepository;
 
 @Service
 @Transactional
@@ -40,6 +41,9 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private BookingRepository bookingRepo;
+    
+    @Autowired
+    private CartRepository cartRepo;
 
     @Override
     public CreatePaymentResponse createPaymentOrder(CreatePaymentRequest request) {
@@ -107,6 +111,11 @@ public class PaymentServiceImpl implements PaymentService {
                     .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
             booking.setStatus(BookingStatus.CONFIRMED);
+            
+            // Clear the customer's cart after successful payment
+            cartRepo.findCartWithItems(booking.getCustomerId()).ifPresent(cart -> {
+                cartRepo.delete(cart);
+            });
 
            PaymentResponse res = new PaymentResponse();
             res.setPaymentId(payment.getPaymentId());

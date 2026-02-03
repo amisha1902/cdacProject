@@ -10,4 +10,5 @@ public interface CartService {
     CartResponse addToCart(AddToCart dto, Integer userId);
     CartItemResponse updateCart(Integer itemId, Integer userId, UpdateCartRequest dto);
     CartResponse deleteItem(Integer itemId, Integer userId);
+    CartResponse clearCart(Integer userId);
 }

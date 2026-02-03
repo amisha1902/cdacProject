@@ -64,8 +64,10 @@ public class SlotGenerationService {
                 slot.setDate(date);
                 slot.setStartTime(start);
                 slot.setEndTime(start.plusMinutes(SLOT_DURATION_MINUTES));
-                slot.setCapacity(4);              // or service-specific capacity
-                slot.setAvailableCapacity(4);
+                // Use service's capacity (default 5, or set by owner during registration)
+                Integer capacity = service.getServiceCapacity() != null ? service.getServiceCapacity() : 5;
+                slot.setCapacity(capacity);
+                slot.setAvailableCapacity(capacity);
                 slot.setBooked(false);
 
                 slotsToSave.add(slot);

@@ -6,10 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.salon.dtos.CategoryWithServices;
 import com.salon.dtos.GetAllSalon;
 import com.salon.dtos.SalonDetailResponse;
+import com.salon.dtos.ServiceResponse;
 //import com.salon.dtos.SalonDetailsResponse;
 import com.salon.entities.Salon;
 import com.salon.repository.SalonRepository;
@@ -66,6 +68,7 @@ public class SalonServiceImpl implements SalonService {
     
     //get salon by id
     @Override
+    @Transactional(readOnly = true)
     public SalonDetailResponse getSalonDetailsById(Long salonId) {
 
         Salon salon = salonRepository.findSalonWithCategories(salonId)
@@ -75,10 +78,32 @@ public class SalonServiceImpl implements SalonService {
         List<CategoryWithServices> categoryDTOs =
                 salon.getServiceCategories()
                      .stream()
-                     .map(cat -> CategoryWithServices.builder()
-                             .categoryId(cat.getCategoryId())
-                             .categoryName(cat.getCategoryName())
-                              .build())
+                     .map(cat -> {
+                         // Explicitly trigger lazy loading of services
+                         cat.getServices().size(); // This triggers the lazy load
+                         
+                         List<ServiceResponse> serviceDTOs = (cat.getServices() != null) 
+                                 ? cat.getServices()
+                                     .stream()
+                                     .map(service -> ServiceResponse.builder()
+                                             .serviceId(service.getServiceId())
+                                             .serviceName(service.getServiceName())
+                                             .description(service.getDescription())
+                                             .basePrice(service.getBasePrice())
+                                             .durationMinutes(service.getDurationMinutes())
+                                             .isAvailable(service.getIsAvailable())
+                                             .serviceCapacity(service.getServiceCapacity())
+                                             .build())
+                                     .toList()
+                                 : List.of(); // Return empty list if services is null
+                         
+                         return CategoryWithServices.builder()
+                                 .categoryId(cat.getCategoryId())
+                                 .categoryName(cat.getCategoryName())
+                                 .description(cat.getDescription())
+                                 .services(serviceDTOs)
+                                 .build();
+                     })
                      .toList();
         System.out.println("Categories size = " + categoryDTOs.size());
 
