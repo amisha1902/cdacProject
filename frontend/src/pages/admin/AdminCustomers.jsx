@@ -8,6 +8,7 @@ import "./AdminDashboard.css";
 
 const AdminCustomers = () => {
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchCustomers();
@@ -15,38 +16,46 @@ const AdminCustomers = () => {
 
   const fetchCustomers = async () => {
     try {
-      const res = await getCustomers();
+      setLoading(true);
+      const res = await getCustomers(); // GET /api/admin/getAllCustomers
       const data = res.data || [];
-      console.log("Raw customer data from API:", data);
-      
+      console.log("Customers from API:", data);
       setCustomers(data);
     } catch (err) {
       console.error("Failed to fetch customers", err);
       alert("Failed to load customers");
+      setCustomers([]);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleToggle = async (customer) => {
-    const userId = customer?.user?.id;
-
-    if (!userId) {
-      console.error("Invalid customer object:", customer);
-      alert("Invalid user id");
-      return;
-    }
+    const userId = customer.userId;
 
     try {
-      const isActive = customer?.user?.isActive;
-
-      if (isActive) {
+      if (customer.isActive) {
         await blockCustomer(userId);
+
+        // update UI only
+        setCustomers((prev) =>
+          prev.map((c) =>
+            c.userId === userId ? { ...c, isActive: false } : c
+          )
+        );
+
         alert("Customer blocked successfully");
       } else {
         await unblockCustomer(userId);
+
+        setCustomers((prev) =>
+          prev.map((c) =>
+            c.userId === userId ? { ...c, isActive: true } : c
+          )
+        );
+
         alert("Customer unblocked successfully");
       }
-
-      fetchCustomers(); // refresh table
     } catch (err) {
       console.error("Action failed", err);
       alert(
@@ -57,12 +66,22 @@ const AdminCustomers = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <p style={{ padding: "20px", textAlign: "center" }}>
+        Loading customers...
+      </p>
+    );
+  }
+
   return (
     <div className="admin-card">
       <h2 className="section-title">Customers</h2>
 
       {customers.length === 0 ? (
-        <p style={{ padding: "20px", textAlign: "center" }}>No customers found</p>
+        <p style={{ padding: "20px", textAlign: "center" }}>
+          No customers found
+        </p>
       ) : (
         <table className="admin-table">
           <thead>
@@ -76,30 +95,34 @@ const AdminCustomers = () => {
           </thead>
 
           <tbody>
-            {customers.map((customer) => (
-              <tr key={customer.customerId}>
-                <td>{customer.user?.id || customer.customerId}</td>
+            {customers.map((c) => (
+              <tr key={c.userId}>
+                <td>{c.userId}</td>
+
                 <td>
-                  {customer.user?.firstName} {customer.user?.lastName}
+                  {c.firstName} {c.lastName}
                 </td>
-                <td>{customer.user?.email}</td>
+
+                <td>{c.email}</td>
+
                 <td>
                   <span
                     className={`badge ${
-                      customer.user?.isActive ? "active" : "blocked"
+                      c.isActive ? "active" : "blocked"
                     }`}
                   >
-                    {customer.user?.isActive ? "Active" : "Blocked"}
+                    {c.isActive ? "Active" : "Blocked"}
                   </span>
                 </td>
+
                 <td>
                   <button
                     className={`action-btn ${
-                      customer.user?.isActive ? "danger" : "success"
+                      c.isActive ? "danger" : "success"
                     }`}
-                    onClick={() => handleToggle(customer)}
+                    onClick={() => handleToggle(c)}
                   >
-                    {customer.user?.isActive ? "Block" : "Unblock"}
+                    {c.isActive ? "Block" : "Unblock"}
                   </button>
                 </td>
               </tr>

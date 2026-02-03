@@ -57,7 +57,8 @@ public class User extends BaseEntity {
     private String profileImage;
 
     @Column(name = "is_active")
-    private Boolean isActive = true;
+    private Boolean isActive = false;
+    
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")

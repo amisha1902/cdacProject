@@ -1,19 +1,24 @@
 import api from "./api";
 
-// CUSTOMERS
-export const getCustomers = () => api.get("/api/admin/customers");
+// Get all customers
+export const getCustomers = () =>
+  api.get("/api/admin/getAllCustomers");
 
+// Block customer
 export const blockCustomer = (userId) =>
-  api.put(`/api/admin/customers/${userId}/block`);
+  api.put(`/api/admin/customer/${userId}/block`);
 
+// Unblock customer
 export const unblockCustomer = (userId) =>
-  api.put(`/api/admin/customers/${userId}/unblock`);
+  api.put(`/api/admin/customer/${userId}/unblock`);
 
-// OWNERS
-export const getOwners = () => api.get("/api/admin/owners");
 
-export const approveOwner = (ownerId) =>
-  api.put(`/api/admin/owners/${ownerId}/approve`);
 
-export const rejectOwner = (ownerId) =>
-  api.put(`/api/admin/owners/${ownerId}/reject`);
+export const getOwners = () =>
+  api.get("/api/admin/owners/pending");
+
+export const approveOwner = (userId) =>
+  api.put(`/api/admin/owners/${userId}/approve`);
+
+export const rejectOwner = (userId) =>
+  api.put(`/api/admin/owners/${userId}/reject`);

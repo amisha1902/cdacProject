@@ -16,18 +16,30 @@ public class CorsConfig {
 
         CorsConfiguration config = new CorsConfiguration();
 
+        // ✅ FRONTEND PORTS (VERY IMPORTANT)
         config.setAllowedOrigins(
-            List.of("http://localhost:5173", "http://localhost:5174")
+            List.of(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:5175"
+            )
         );
+
+        // ✅ HTTP METHODS
         config.setAllowedMethods(
             List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
         );
+
+        // ✅ HEADERS
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization"));
+
+        // ✅ JWT / COOKIES SUPPORT
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =
-            new UrlBasedCorsConfigurationSource();
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
 
         return source;

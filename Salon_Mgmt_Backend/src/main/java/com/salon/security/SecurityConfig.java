@@ -3,28 +3,33 @@ package com.salon.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final CorsConfigurationSource corsConfigurationSource;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(
+            JwtAuthFilter jwtAuthFilter,
+            CorsConfigurationSource corsConfigurationSource
+    ) {
         this.jwtAuthFilter = jwtAuthFilter;
+        this.corsConfigurationSource = corsConfigurationSource;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            .cors(Customizer.withDefaults())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
@@ -35,9 +40,10 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(auth -> auth
 
+                // ✅ PRE-FLIGHT
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Swagger & API Docs
+                // ✅ SWAGGER
                 .requestMatchers(
                         "/swagger-ui/**",
                         "/swagger-ui.html",
@@ -45,40 +51,40 @@ public class SecurityConfig {
                         "/api-docs.json"
                 ).permitAll()
 
-                // Public APIs - Authentication
+                // ✅ AUTH
                 .requestMatchers(
                         "/users/login",
                         "/users/register/**",
                         "/error"
                 ).permitAll()
-                .requestMatchers(HttpMethod.POST, 
-                        "/users/register/customer",
-                        "/users/register/owner"
+
+                // ✅ PUBLIC
+                .requestMatchers(HttpMethod.GET,
+                        "/api/home/**",
+                        "/api/salons/**",
+                        "/api/services/**",
+                        "/api/categories/**",
+                        "/api/slots/**"
                 ).permitAll()
 
-                // Public APIs - Browse Salons & Services
-                .requestMatchers(HttpMethod.GET, "/api/home/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/salons/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/services/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/slots/**").permitAll()
+                // ✅ OWNER (🔥 MISSING EARLIER 🔥)
+                .requestMatchers("/api/owner/**").hasRole("OWNER")
 
-                // Admin
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                // ✅ ADMIN
+             // ✅ ADMIN APIs
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                // Cart endpoints - Authenticated users only
-                .requestMatchers("/api/cart/**").authenticated()
 
-                // Booking endpoints - Authenticated users only
-                .requestMatchers("/api/bookings/**").authenticated()
+                // ✅ AUTHENTICATED USERS
+                .requestMatchers(
+                        "/api/cart/**",
+                        "/api/bookings/**",
+                        "/api/payment/**",
+                        "/users/profile",
+                        "/auth/**"
+                ).authenticated()
 
-                // Payment endpoints - Authenticated users only
-                .requestMatchers("/api/payment/**").authenticated()
-
-                // Profile, user management - Authenticated
-                .requestMatchers("/auth/**").authenticated()
-
-                // Everything else requires authentication
+                // ✅ EVERYTHING ELSE
                 .anyRequest().authenticated()
             )
 

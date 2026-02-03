@@ -3,6 +3,7 @@ import { loginUser } from "../../../services/userService";
 import notify from "../../../utils/notify";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import axios from "axios";
 import "./Login.css";
 
 const Login = () => {
@@ -37,11 +38,24 @@ const Login = () => {
       const { role, userId, token } = res.data;
 
       // ✅ STORE AUTH DATA
-      localStorage.setItem("token", token);     // 🔐 JWT
+      localStorage.setItem("token", token);
       localStorage.setItem("userId", userId);
       localStorage.setItem("role", role);
 
-      // show success toast
+      // 🔑 IF OWNER → FETCH SALON ID
+      if (role === "OWNER") {
+        const salonRes = await axios.get(
+          "http://localhost:8080/api/owner/salon",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        localStorage.setItem("salonId", salonRes.data.salonId);
+      }
+
       notify.success("Logged in successfully");
 
       // ✅ ROLE BASED REDIRECT
@@ -56,10 +70,11 @@ const Login = () => {
       }
 
     } catch (err) {
-      notify.error(err.response?.data?.message || "Invalid email or password");
+      notify.error(
+        err.response?.data?.message || "Invalid email or password"
+      );
     }
   };
-
 
   return (
     <div className="login-page">
