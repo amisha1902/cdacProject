@@ -1,7 +1,5 @@
 package com.salon.config;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.salon.entities.User;
 import com.salon.entities.UserRole;
 import com.salon.repository.UserRepository;
+
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
@@ -43,7 +44,7 @@ public class DataInitializer {
 
             userRepository.save(admin);
 
-            log.info("Admin created successfully: {}", adminEmail);
+            log.info("Admin user created successfully: {}", adminEmail);
         };
     }
 }
