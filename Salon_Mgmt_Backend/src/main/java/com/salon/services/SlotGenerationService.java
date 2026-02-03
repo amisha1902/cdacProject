@@ -28,14 +28,14 @@ public class SlotGenerationService {
     @Transactional
     public void generateSlotsForDateRange(LocalDate fromDate, LocalDate toDate) {
 
-        List<com.salon.entities.Service> services = serviceRepo.findAllActiveServices();
+        List<com.salon.entities.Services> services = serviceRepo.findAllActiveServices();
 
-        for (com.salon.entities.Service service : services) {
+        for (com.salon.entities.Services service : services) {
             generateSlotsForService(service, fromDate, toDate);
         }
     }
 
-    private void generateSlotsForService(com.salon.entities.Service service, LocalDate from, LocalDate to) {
+    private void generateSlotsForService(com.salon.entities.Services service, LocalDate from, LocalDate to) {
 
         Salon salon = service.getSalon();
         LocalTime opening = salon.getOpeningTime();

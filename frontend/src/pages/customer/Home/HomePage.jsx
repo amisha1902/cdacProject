@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { useSearch } from "../../../context/SearchContext";
-
 export default function HomePage() {
   const navigate = useNavigate();
   const { search, location } = useSearch();
@@ -55,19 +54,18 @@ export default function HomePage() {
         className="position-relative overflow-hidden d-flex align-items-center"
         style={{
           minHeight: "90vh",
-top: "30px", 
           background: "linear-gradient(135deg, #fff7f2, #fefefe)",
         }}
       >
         <div className="container">
-          <div className="row align-items-center">
+          <div className="row d-flex align-items-center">
             <motion.div
-              className="col-lg-4 text-lg-start text-center"
+              className="col text-lg-start text-center"
               initial={{ opacity: 0, x: -40 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <p className="text-secondary small">
+              <p className="text-secondary small ">
                 DISCOVER PREMIUM SALON & SPA SERVICES NEAR YOU
               </p>
 
@@ -191,75 +189,80 @@ top: "30px",
       </section>
 
       {/* ================= POPULAR SALONS SECTION ================= */}
-      <section className="container py-5">
-        <div className="row align-items-center">
-          <div className="col-lg-4 mb-4 mb-lg-0">
-            <h6 className="text-danger fw-semibold mb-2">POPULAR SALONS</h6>
+ <section className="container py-5">
+  <div className="col col-md-12 d-flex align-items-center ">
+    
+    {/* LEFT COLUMN */}
+    <div className="col-lg-4 mb-4 ">
+      <h6 className="text-danger fw-semibold mb-2">POPULAR SALONS</h6>
 
-            <p className="text-muted small mb-4">
-              Explore top-rated salons and spas near you. From hair styling and
-              makeup to spa therapies and grooming services — book instantly and
-              hassle-free.
+      <p className="text-muted small mb-4">
+        Explore top-rated salons and spas near you. From hair styling and
+        makeup to spa therapies and grooming services — book instantly and
+        hassle-free.
+      </p>
+
+      <button
+        className="btn btn-danger rounded-pill px-4"
+        onClick={handleViewAllSalons}
+      >
+        View All Salons
+      </button>
+    </div>
+
+    {/* RIGHT COLUMN */}
+ <div className="container ">
+  <div className="row g-4 ms-5">
+    {loading &&
+      Array.from({ length: 6 }).map((_, i) => (
+        <div className="col-12 col-md-3 " key={i}>
+          <div
+            className="card border-0 shadow-sm p-5 text-center h-100"
+            style={{ borderRadius: "18px", height: "190px" }}
+          />
+        </div>
+      ))}
+
+    {!loading &&
+      filteredSalons.slice(0, 6).map((salon) => (
+        <div className="col-12 col-md-3 ms-4 " key={salon.salonId}>
+          <div
+            className="card border-0 shadow-sm px-6 py-4 text-center h-100"
+            style={{ borderRadius: "18px", cursor: "pointer" , width:"200px"}}
+            onClick={() => navigate(`/salons/${salon.salonId}`)}
+          >
+            <div className="d-flex justify-content-center mb-2">
+              <img
+                src={salon.logo || "https://via.placeholder.com/90x90?text=Salon"}
+                alt={salon.salonName}
+                className="rounded-circle object-fit-cover"
+                width="80"
+                height="80"
+              />
+            </div>
+
+            <h6 className="fw-bold mb-1">{salon.salonName}</h6>
+            <p className="text-muted small mb-1">
+              {salon.city}, {salon.state}
             </p>
 
-            <button
-              className="btn btn-danger rounded-pill px-4"
-              onClick={handleViewAllSalons}
-            >
-              View All Salons
-            </button>
-          </div>
-
-          <div className="col-lg-8">
-            <div className="row g-4">
-              {loading &&
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div className="col-md-4" key={i}>
-                    <div
-                      className="card border-0 shadow-sm text-center p-3"
-                      style={{ borderRadius: "18px", height: "190px" }}
-                    />
-                  </div>
-                ))}
-
-              {!loading &&
-                filteredSalons.slice(0, 6).map((salon) => (
-                  <div className="col-md-4" key={salon.salonId}>
-                    <div
-                      className="card border-0 shadow-sm text-center p-3 h-100"
-                      style={{ borderRadius: "18px", cursor: "pointer" }}
-                      onClick={() => navigate(`/salons/${salon.salonId}`)}
-                    >
-                      <div className="d-flex justify-content-center">
-                        <img
-                          src={
-                            salon.logo ||
-                            "https://via.placeholder.com/90x90?text=Salon"
-                          }
-                          alt={salon.salonName}
-                          className="rounded-circle object-fit-cover"
-                          width="90"
-                          height="90"
-                        />
-                      </div>
-
-                      <h6 className="mt-3 fw-bold">{salon.salonName}</h6>
-
-                      <p className="text-muted small mb-2">
-                        {salon.city}, {salon.state}
-                      </p>
-
-                      <div className="text-warning small">
-                        {"★".repeat(Math.round(salon.ratingAverage || 0))}
-                        {"☆".repeat(5 - Math.round(salon.ratingAverage || 0))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            <div className="text-warning small">
+              {"★".repeat(Math.round(salon.ratingAverage || 0))}
+              {"☆".repeat(5 - Math.round(salon.ratingAverage || 0))}
             </div>
           </div>
         </div>
-      </section>
+      ))}
+  </div>
+</div>
+
+
+
+
+  </div>
+</section>
+
+
     </div>
   );
 }

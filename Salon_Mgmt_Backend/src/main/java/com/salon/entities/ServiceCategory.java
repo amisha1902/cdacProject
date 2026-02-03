@@ -44,5 +44,5 @@ public class ServiceCategory extends BaseEntity{
 	    private Salon salon;
 
 	    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	    private List<Service> services;
+	    private List<Services> services;
 }

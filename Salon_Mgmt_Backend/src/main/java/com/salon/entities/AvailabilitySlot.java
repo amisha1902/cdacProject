@@ -34,7 +34,7 @@ public class AvailabilitySlot {
     private Long salonId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "service_id", nullable = false)
-    private Service service;
+    private Services service;
 
 //    private Integer serviceId;
 

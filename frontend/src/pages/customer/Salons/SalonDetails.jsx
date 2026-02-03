@@ -302,101 +302,111 @@ const SalonDetails = () => {
       )}
 
       {/* ================= CATEGORY + SERVICES ================= */}
-      <Row>
-        <Col md={3} className="border-end">
-          <h5 className="fw-bold mb-3">Select Categories</h5>
-          <ListGroup variant="flush">
-            {categories.map((cat) => (
-              <ListGroup.Item
-                key={cat.categoryId}
-                action
-                onClick={() => setSelectedCategoryId(cat.categoryId)}
-                className={`fw-semibold mb-2 text-center ${
-                  cat.categoryId === selectedCategoryId
-                    ? "bg-danger text-white rounded-pill"
-                    : "bg-light"
-                }`}
-                style={{ cursor: "pointer" }}
-              >
-                {cat.categoryName}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
+   <div className="container">
+<div className="d-flex mt-4">
+  {/* Categories */}
+  <Col md={3} className="pe-4 border-end">
+    <h6 className="fw-bold text-uppercase text-muted mb-3">
+      Categories
+    </h6>
+    <ListGroup variant="flush">
+      {categories.map((cat) => (
+        <ListGroup.Item
+          key={cat.categoryId}
+          action
+          onClick={() => setSelectedCategoryId(cat.categoryId)}
+          className={`fw-semibold px-3 py-2 mb-2 rounded ${
+            cat.categoryId === selectedCategoryId
+              ? "bg-danger text-white"
+              : "bg-light"
+          }`}
+          style={{ cursor: "pointer", border: "none" }}
+        >
+          {cat.categoryName}
+        </ListGroup.Item>
+      ))}
+    </ListGroup>
+  </Col>
+
+  {/* Services */}
+  <Col md={9} className="ms-4">
+  {loadingServices ? (
+    <div className="text-center mt-5">
+      <Spinner animation="border" />
+    </div>
+  ) : services.length === 0 ? (
+    <p className="text-muted">No services available.</p>
+  ) : (
+    <Row className="g-4">
+      {services.map((service) => (
+        <Col xs={12} sm={6} lg={5} key={service.serviceId}>
+          <Card
+            className="border-0 shadow-sm h-100 service-card"
+            style={{ borderRadius: "14px" }}
+          >
+            <Card.Body className="p-3">
+              <div className="d-flex gap-3">
+                <img
+                  src={
+                    service.image ||
+                    "https://via.placeholder.com/100x100?text=Service"
+                  }
+                  alt={service.serviceName}
+                  className="rounded object-fit-cover"
+                  width="72"
+                  height="72"
+                />
+
+                <div className="flex-grow-1 d-flex flex-column justify-content-between">
+                  <div>
+                    <h6 className="fw-semibold mb-1">
+                      {service.serviceName}
+                    </h6>
+
+                    {service.description && (
+                      <p
+                        className="text-muted small mb-1"
+                        style={{
+                          display: "-webkit-box",
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {service.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="d-flex justify-content-between align-items-center mt-2">
+                    <span className="fw-semibold text-danger">
+                      ₹{service.basePrice}
+                    </span>
+                    <span className="text-muted small">
+                      {service.durationMinutes} mins
+                    </span>
+                    <Button
+                      size="sm"
+                      className="rounded-pill px-3"
+                      style={{ backgroundColor: "#dc3545", border: "none" }}
+                      onClick={() => handleAddToCartClick(service)}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
         </Col>
+      ))}
+    </Row>
+  )}
+</Col>
 
-        <Col md={9}>
-          {loadingServices ? (
-            <div className="text-center mt-5">
-              <Spinner animation="border" />
-            </div>
-          ) : services.length === 0 ? (
-            <p className="text-muted">No services available.</p>
-          ) : (
-            <Row className="g-3">
-              {services.map((service) => (
-                <Col md={6} key={service.serviceId}>
-                  <Card
-                    className="border-0 shadow-sm rounded-3 h-100 p-3 service-card"
-                    style={{ transition: "transform 0.2s, box-shadow 0.2s" }}
-                  >
-                    <div className="d-flex gap-3">
-                      <img
-                        src={
-                          service.image ||
-                          "https://via.placeholder.com/100x100?text=Service"
-                        }
-                        alt={service.serviceName}
-                        className="rounded-3 object-fit-cover"
-                        width="90"
-                        height="90"
-                      />
+</div>
+</div>
 
-                      <div className="flex-grow-1 d-flex flex-column justify-content-between">
-                        <div>
-                          <h6 className="fw-bold mb-1">
-                            {service.serviceName}
-                          </h6>
-
-                          {service.description && (
-                            <p
-                              className="text-muted small mb-1"
-                              style={{
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                              }}
-                            >
-                              {service.description}
-                            </p>
-                          )}
-                        </div>
-
-                        <div className="d-flex justify-content-between align-items-center mt-2">
-                          <span className="fw-semibold text-danger">
-                            ₹{service.basePrice}
-                          </span>
-                          <span className="text-muted small">
-                            {service.durationMinutes} mins
-                          </span>
-                          <Button
-                            size="sm"
-                            className="rounded-pill"
-                            style={{ backgroundColor: "#dc3545", border: "none" }}
-                            onClick={() => handleAddToCartClick(service)}
-                          >
-                            Add to Cart
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          )}
-        </Col>
-      </Row>
 
       {/* ================= SLOT SELECTION MODAL ================= */}
       <SlotModal

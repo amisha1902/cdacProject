@@ -7,10 +7,10 @@ const Footer = () => {
       <div className="container">
 
         {/* Top Section */}
-        <div className="row gy-4">
+        <div className="d-flex flex-lg-row flex-column flex-wrap justify-content-between gap-4">
 
           {/* Logo */}
-          <div className="col-lg-3 col-md-6">
+          <div className="flex-shrink-0" style={{ minWidth: "200px" }}>
             <div className="fw-bold fs-4 mb-3 d-flex align-items-center gap-2">
               <div
                 className="bg-dark text-white rounded-3 d-flex align-items-center justify-content-center"
@@ -23,7 +23,7 @@ const Footer = () => {
           </div>
 
           {/* Company */}
-          <div className="col-lg-3 col-md-6">
+          <div className="flex-shrink-0" style={{ minWidth: "150px" }}>
             <h6 className="fw-semibold mb-3">Company</h6>
             <ul className="list-unstyled text-muted small d-flex flex-column gap-2">
               <li>About us</li>
@@ -36,27 +36,27 @@ const Footer = () => {
           </div>
 
           {/* For Customers */}
-          <div className="col-lg-3 col-md-6">
+          <div className="flex-shrink-0" style={{ minWidth: "150px" }}>
             <h6 className="fw-semibold mb-3">For customers</h6>
             <ul className="list-unstyled text-muted small d-flex flex-column gap-2">
-              <li>UC reviews</li>
+              <li>GB reviews</li>
               <li>Categories near you</li>
               <li>Contact us</li>
             </ul>
           </div>
 
           {/* For Professionals */}
-          <div className="col-lg-2 col-md-6">
+          <div className="flex-shrink-0" style={{ minWidth: "150px" }}>
             <h6 className="fw-semibold mb-3">For professionals</h6>
             <ul className="list-unstyled text-muted small d-flex flex-column gap-2">
               <li>Register as a professional</li>
             </ul>
           </div>
 
-          {/* Social */}
-          <div className="col-lg-1 col-md-6">
+          {/* Social Links */}
+          <div className="flex-shrink-0" style={{ minWidth: "180px" }}>
             <h6 className="fw-semibold mb-3">Social links</h6>
-            <div className="d-flex gap-2 mb-3">
+            <div className="d-flex gap-2 mb-3 flex-wrap">
               <div className="border rounded-circle p-2 text-muted">
                 <FaTwitter />
               </div>
@@ -90,12 +90,10 @@ const Footer = () => {
         {/* Divider */}
         <hr className="my-4" />
 
-        {/* Bottom */}
-        <div className="text-muted small">
+        {/* Bottom Section */}
+        <div className="text-muted small text-center text-lg-start d-flex flex-column flex-lg-row justify-content-between gap-2">
           <div>* As on December 31, 2024</div>
-          <div>
-            © Copyright 2026 Glamora Beauty Limited. All rights reserved.
-          </div>
+          <div>© Copyright 2026 Glamora Beauty Limited. All rights reserved.</div>
         </div>
 
       </div>

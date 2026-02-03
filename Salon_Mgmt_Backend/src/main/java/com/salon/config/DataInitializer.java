@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.salon.entities.Salon;
-import com.salon.entities.Service;
+import com.salon.entities.Services;
 import com.salon.entities.ServiceCategory;
 import com.salon.entities.User;
 import com.salon.entities.UserRole;
@@ -136,7 +136,7 @@ public class DataInitializer {
 
     private void createService(String name, String description, BigDecimal price, 
                                Salon salon, ServiceCategory category, ServiceRepository serviceRepository) {
-        Service service = new Service();
+        Services service = new Services();
         service.setServiceName(name);
         service.setDescription(description);
         service.setBasePrice(price);

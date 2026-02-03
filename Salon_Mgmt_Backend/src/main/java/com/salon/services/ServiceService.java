@@ -16,7 +16,7 @@ public class ServiceService {
     private final ServiceRepository serviceRepository;
 
     public List<ServiceResponse> getServicesByCategory(Integer categoryId) {
-        List<com.salon.entities.Service> services = serviceRepository.findByCategoryId(categoryId);
+        List<com.salon.entities.Services> services = serviceRepository.findByCategoryId(categoryId);
 
         // Map entities to DTO for API response
         return services.stream()

@@ -92,7 +92,7 @@ public class Salon extends BaseEntity{
 
 
     @Column(name = "is_approved", nullable = false)
-    private Boolean isApproved = false;
+    private Integer isApproved ;
 
     @Column(name = "rating_average", precision = 3, scale = 2)
     private BigDecimal ratingAverage = BigDecimal.ZERO;

@@ -70,7 +70,7 @@ const ProfilePage = () => {
     <div className="container py-5" style={{ maxWidth: 980 }}>
       <h3 className="fw-semibold mb-4">My Profile</h3>
 
-      <div className="row g-4">
+      <div className="col-lg-12 d-flex">
         {/* LEFT — PROFILE CARD */}
         <div className="col-md-4">
           <div className="card shadow-sm border-0 text-center p-4">
@@ -104,7 +104,7 @@ const ProfilePage = () => {
         </div>
 
         {/* RIGHT — FORMS */}
-        <div className="col-md-8">
+        <div className="col-md-12 ms-4">
           <div className="card shadow-sm border-0 p-4 mb-4">
             <h5 className="fw-semibold mb-3">Edit Profile</h5>
 

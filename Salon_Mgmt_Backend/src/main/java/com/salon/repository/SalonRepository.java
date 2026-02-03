@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.salon.entities.Salon;
-import com.salon.entities.Service;
+import com.salon.entities.Services;
 
 public interface SalonRepository extends JpaRepository<Salon, Long> {
 ///get all slaonss
@@ -19,7 +19,7 @@ public interface SalonRepository extends JpaRepository<Salon, Long> {
             SELECT DISTINCT s
             FROM Salon s
             LEFT JOIN FETCH s.workingDays wd
-            WHERE s.isApproved = true
+            WHERE s.isApproved = 1
               AND (:search IS NULL 
                    OR LOWER(s.city) LIKE LOWER(CONCAT('%', :search, '%'))
                    OR LOWER(s.salonName) LIKE LOWER(CONCAT('%', :search, '%')))
@@ -29,7 +29,7 @@ public interface SalonRepository extends JpaRepository<Salon, Long> {
         countQuery = """
             SELECT COUNT(s)
             FROM Salon s
-            WHERE s.isApproved = true
+            WHERE s.isApproved = 1
               AND (:search IS NULL 
                    OR LOWER(s.city) LIKE LOWER(CONCAT('%', :search, '%'))
                    OR LOWER(s.salonName) LIKE LOWER(CONCAT('%', :search, '%')))

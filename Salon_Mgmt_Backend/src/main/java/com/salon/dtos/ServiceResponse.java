@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.salon.entities.AvailabilitySlot;
-import com.salon.entities.Service;
+import com.salon.entities.Services;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -78,7 +78,7 @@ public class CartServiceImpl implements CartService {
 		// TODO Auto-generated method stub
 		
 		//check if service exists
-		com.salon.entities.Service service  = serviceRepository.findById(dto.getServiceId())
+		com.salon.entities.Services service  = serviceRepository.findById(dto.getServiceId())
 				.orElseThrow(()-> new RuntimeException("service not found"));
 		
 		//get or creagte cart

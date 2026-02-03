@@ -13,7 +13,7 @@ import lombok.*;
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	public class Service extends BaseEntity {
+	public class Services extends BaseEntity {
 
 	    @Id
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -19,11 +19,7 @@ const CartPage = () => {
   const fetchCart = async () => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
-
-    if (!userId || !token) {
-      navigate("/login");
-      return;
-    }
+    if (!userId || !token) return navigate("/login");
 
     try {
       setLoading(true);
@@ -31,9 +27,7 @@ const CartPage = () => {
         params: { userId },
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setCartId(res.data.cartId);
-
       const items = res.data.items?.map(item => ({
         id: item.itemId,
         serviceId: item.serviceId,
@@ -42,13 +36,12 @@ const CartPage = () => {
         time: item.time || "",
         price: item.price || 0,
         quantity: item.quantity || 1,
-        image: "https://via.placeholder.com/100?text=Service",
+        image: "https://via.placeholder.com/120?text=Service",
       })) || [];
-
       setCart(items);
       setError("");
     } catch (err) {
-      console.error("Failed to fetch cart:", err);
+      console.error(err);
       setError("Failed to load cart items");
       setCart([]);
     } finally {
@@ -59,18 +52,14 @@ const CartPage = () => {
   const updateCartItem = async (itemId, updateData) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-
     try {
       const res = await axios.put(`/api/cart/update/${itemId}`, updateData, {
         headers: { Authorization: `Bearer ${token}`, "X-USER-ID": userId },
       });
-
-      setCart(items =>
-        items.map(i => i.id === itemId ? { ...i, ...res.data } : i)
-      );
+      setCart(items => items.map(i => i.id === itemId ? { ...i, ...res.data } : i));
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (err) {
-      console.error("Failed to update cart item:", err);
+      console.error(err);
       alert(err.response?.data?.message || "Failed to update item");
     }
   };
@@ -88,15 +77,14 @@ const CartPage = () => {
   const deleteItem = async (itemId) => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-
     try {
       await axios.delete(`/api/cart/delete/${itemId}`, {
-        headers: { Authorization: `Bearer ${token}`, "X-USER-ID": userId },
+        headers: { Authorization: `Bearer ${token}`, "USER-ID": userId },
       });
       setCart(items => items.filter(i => i.id !== itemId));
       window.dispatchEvent(new Event('cartUpdated'));
     } catch (err) {
-      console.error("Failed to delete item:", err);
+      console.error(err);
       alert(err.response?.data?.message || "Failed to remove item");
     }
   };
@@ -104,16 +92,8 @@ const CartPage = () => {
   const handleCheckout = async () => {
     const userId = localStorage.getItem("userId");
     const token = localStorage.getItem("token");
-
-    if (!userId || !token) {
-      navigate("/login");
-      return;
-    }
-
-    if (!cartId) {
-      alert("Cart not found. Please try again.");
-      return;
-    }
+    if (!userId || !token) return navigate("/login");
+    if (!cartId) return alert("Cart not found. Please try again.");
 
     try {
       setLoading(true);
@@ -121,10 +101,9 @@ const CartPage = () => {
         params: { userId },
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       });
-
       navigate("/confirmBooking", { state: { booking: res.data } });
     } catch (err) {
-      console.error("Checkout failed:", err);
+      console.error(err);
       alert(err.response?.data?.message || "Checkout failed. Please try again.");
     } finally {
       setLoading(false);
@@ -138,72 +117,71 @@ const CartPage = () => {
   if (error) return <div className="container text-center py-5 text-danger"><h2>{error}</h2></div>;
 
   return (
-    <div className="container py-5">
-   {/* 0 = Cart, 1 = Payment, 2 = Booked! */}
+    <div className="container py-5" style={{ minWidth: "1024px" }}>
+  {/* Progress Tracker */}
+  <ProgressTracker currentStep={0} />
 
-      {cart.length === 0 ? (
-        <div className="text-center my-5">
-          <h3>Your cart is empty</h3>
-          <button className="btn btn-primary mt-3" onClick={() => navigate("/salonList")}>
-            Browse Services
-          </button>
-        </div>
-      ) : (
-        
-        <div className="row">
-        <ProgressTracker currentStep={0} />
-          <div className="col-lg-8">
-            {cart.map(item => (
-              <div key={item.id} className="card mb-3 shadow-sm">
-                <div className="row g-0 align-items-center">
-                  <div className="col-md-2">
-                    <img src={item.image} className="img-fluid rounded-start" alt={item.name} />
-                  </div>
-                  <div className="col-md-7">
-                    <div className="card-body p-3">
-                      <h5 className="card-title mb-2">{item.name}</h5>
-                      <div className="d-flex gap-3 mb-2 text-muted">
-                        <span><FaCalendarAlt /> {item.date}</span>
-                        <span><FaClock /> {item.time}</span>
-                      </div>
-                      <div className="d-flex align-items-center gap-2">
-                        <button className="btn btn-outline-secondary btn-sm" onClick={() => decreaseQty(item.id)}><FaMinus /></button>
-                        <span className="fw-bold">{item.quantity}</span>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={() => increaseQty(item.id)}><FaPlus /></button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-3 text-end pe-3">
-                    <button className="btn btn-link text-danger p-0 mb-2" onClick={() => {
-                      if (window.confirm('Remove this item from cart?')) deleteItem(item.id);
-                    }}><FaTrashAlt size={20} /></button>
-                    <p className="fw-bold fs-5">₹{item.price * item.quantity}</p>
-                  </div>
+  {cart.length === 0 ? (
+    <div className="text-center my-5">
+      <h3>Your cart is empty</h3>
+      <button className="btn btn-primary mt-3" onClick={() => navigate("/salonList")}>
+        Browse Services
+      </button>
+    </div>
+  ) : (
+    <div className="d-flex flex-lg-row flex-column gap-4 mt-4">
+      {/* Cart Items */}
+      <div className="flex-fill">
+        {cart.map(item => (
+          <div key={item.id} className="card mb-3 shadow-sm rounded-3 border-0">
+            <div className="d-flex align-items-center p-3">
+              <div className="me-3" style={{ width: "120px", flexShrink: 0 }}>
+                <img src={item.image} className="img-fluid rounded-3" alt={item.name} />
+              </div>
+              <div className="flex-fill">
+                <h6 className="fw-semibold mb-2">{item.name}</h6>
+                <div className="d-flex gap-3 text-muted small mb-2">
+                  <span><FaCalendarAlt /> {item.date}</span>
+                  <span><FaClock /> {item.time}</span>
+                </div>
+                <div className="d-flex align-items-center gap-2">
+                  <button className="btn btn-outline-secondary btn-sm px-2" onClick={() => decreaseQty(item.id)}><FaMinus /></button>
+                  <span className="fw-bold">{item.quantity}</span>
+                  <button className="btn btn-outline-secondary btn-sm px-2" onClick={() => increaseQty(item.id)}><FaPlus /></button>
                 </div>
               </div>
-            ))}
-          </div>
-
-          {/* Order Summary */}
-          <div className="col-lg-4">
-            <div className="card shadow-sm p-3 mb-3">
-              <h5 className="fw-bold mb-3">Order Summary</h5>
-              <div className="d-flex justify-content-between mb-2">
-                <span>Subtotal</span>
-                <span>₹{subtotal.toFixed(2)}</span>
+              <div className="text-end ms-3" style={{ width: "80px", flexShrink: 0 }}>
+                <button className="btn btn-link text-danger p-0 mb-2" onClick={() => {
+                  if (window.confirm('Remove this item from cart?')) deleteItem(item.id);
+                }}><FaTrashAlt size={18} /></button>
+                <p className="fw-bold fs-6">₹{(item.price * item.quantity).toFixed(2)}</p>
               </div>
-              <hr />
-              <div className="d-flex justify-content-between fw-bold fs-5">
-                <span>Total</span>
-                <span>₹{total.toFixed(2)}</span>
-              </div>
-              <button className="btn btn-danger w-100 mt-3" onClick={handleCheckout}>Proceed to Checkout</button>
-              <button className="btn btn-outline-secondary w-100 mt-2" onClick={() => navigate("/salonList")}>Continue Browsing</button>
             </div>
           </div>
+        ))}
+      </div>
+
+      {/* Order Summary */}
+      <div style={{ minWidth: "300px", maxWidth: "350px" }}>
+        <div className="card shadow-sm rounded-3 p-4 sticky-top" style={{ top: "20px" }}>
+          <h6 className="fw-bold mb-3">Order Summary</h6>
+          <div className="d-flex justify-content-between mb-2">
+            <span>Subtotal</span>
+            <span>₹{subtotal.toFixed(2)}</span>
+          </div>
+          <hr />
+          <div className="d-flex justify-content-between fw-bold fs-5 mb-3">
+            <span>Total</span>
+            <span>₹{total.toFixed(2)}</span>
+          </div>
+          <button className="btn btn-danger w-100 mb-2" onClick={handleCheckout}>Proceed to Checkout</button>
+          <button className="btn btn-outline-secondary w-100" onClick={() => navigate("/salonList")}>Continue Browsing</button>
         </div>
-      )}
+      </div>
     </div>
+  )}
+</div>
+
   );
 };
 
