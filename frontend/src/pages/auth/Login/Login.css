@@ -1,4 +1,4 @@
-/* FULL PAGE CENTER */
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -8,7 +8,7 @@
   padding: 20px;
 }
 
-/* CARD */
+
 .login-card {
   width: 100%;
   max-width: 440px;
@@ -18,7 +18,6 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
-/* HEADINGS */
 .login-card h2 {
   font-size: 28px;
   font-weight: 600;
@@ -45,7 +44,7 @@
   color: #333;
 }
 
-/* INPUTS */
+
 .login-card input {
   width: 100%;
   padding: 14px 16px;

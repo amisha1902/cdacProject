@@ -24,10 +24,10 @@ const OwnerDashboard = () => {
     
     // Auto-refresh every 30 seconds
     const intervalId = setInterval(() => {
-      fetchDashboardStats(true); // Silent refresh
+      fetchDashboardStats(true); 
     }, 30000);
     
-    // Listen for booking updates
+    
     const handleBookingUpdate = () => {
       fetchDashboardStats(true);
     };

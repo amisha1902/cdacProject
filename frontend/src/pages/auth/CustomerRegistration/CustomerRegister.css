@@ -1,4 +1,4 @@
-/* ---------- Page Wrapper ---------- */
+
 .register-page {
   min-height: 100vh;
   background: #f6f3fb;
@@ -8,7 +8,7 @@
   padding: 24px;
 }
 
-/* ---------- Card Layout ---------- */
+
 .register-card {
   width: 100%;
   max-width: 920px;
@@ -22,7 +22,7 @@
   column-gap: 48px;
 }
 
-/* ---------- Left Panel ---------- */
+
 .register-card > h2 {
   margin: 0 0 8px 0;
   font-size: 30px;

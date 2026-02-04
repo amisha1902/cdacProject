@@ -1,7 +1,7 @@
 import React from "react";
 
 const ProgressTracker = ({ currentStep }) => {
-  // Steps updated to match your reference image
+  
   const steps = ["CART",  "PAYMENT", "BOOKING CONFIRMED"];
 
   return (
@@ -15,7 +15,7 @@ const ProgressTracker = ({ currentStep }) => {
                 letterSpacing: "2px",
                 fontSize: "14px",
                 fontWeight: "600",
-                color: index <= currentStep ? "#20B2AA" : "#535766", // Teal for active, Grey for inactive
+                color: index <= currentStep ? "#20B2AA" : "#535766", 
                 borderBottom: index === currentStep ? "3px solid #20B2AA" : "none",
                 paddingBottom: "4px",
                 transition: "all 0.3s ease"
@@ -31,7 +31,7 @@ const ProgressTracker = ({ currentStep }) => {
               className="mx-3"
               style={{
                 width: "60px",
-                borderTop: "1px dashed #7e818c", // Creates the dashed line from your image
+                borderTop: "1px dashed #7e818c", 
                 marginTop: "2px"
               }}
             ></div>

@@ -17,7 +17,7 @@ const AdminCustomers = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const res = await getCustomers(); // GET /api/admin/getAllCustomers
+      const res = await getCustomers(); 
       const data = res.data || [];
       console.log("Customers from API:", data);
       setCustomers(data);
@@ -37,7 +37,7 @@ const AdminCustomers = () => {
       if (customer.isActive) {
         await blockCustomer(userId);
 
-        // update UI only
+        // updates UI only
         setCustomers((prev) =>
           prev.map((c) =>
             c.userId === userId ? { ...c, isActive: false } : c

@@ -168,9 +168,7 @@ const CartPage = () => {
         {cart.map(item => (
           <div key={item.id} className="card mb-3 shadow-sm rounded-3 border-0">
             <div className="d-flex align-items-center p-3">
-              {/* <div className="me-3" style={{ width: "120px", flexShrink: 0 }}>
-                <img src={item.image} className="img-fluid rounded-3" alt={item.name} />
-              </div> */}
+              
               <div className="flex-fill">
                 <h6 className="fw-semibold mb-2">{item.name}</h6>
                 <div className="d-flex gap-3 text-muted small mb-2">

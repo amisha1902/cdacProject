@@ -53,7 +53,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Social Links */}
+          {/* Social Links Are Here */}
           <div className="flex-shrink-0" style={{ minWidth: "180px" }}>
             <h6 className="fw-semibold mb-3">Social links</h6>
             <div className="d-flex gap-2 mb-3 flex-wrap">
@@ -87,7 +87,7 @@ const Footer = () => {
 
         </div>
 
-        {/* Divider */}
+      
         <hr className="my-4" />
 
         {/* Bottom Section */}

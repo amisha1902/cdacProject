@@ -27,7 +27,7 @@
   font-size: 22px;
   font-weight: 700;
   margin: 0;
-  color: #e11d48; /* Cherry Red */
+  color: #e11d48; 
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -78,7 +78,7 @@
   color: #fecaca !important;
 }
 
-/* ==================== MAIN CONTENT ==================== */
+
 .admin-content {
   flex: 1;
   margin-left: 280px;
@@ -134,7 +134,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ==================== OLD STYLES (CUSTOMERS/OWNERS TABLES) ==================== */
+
 .admin-page {
   background: #f6f6f6;
   min-height: 100vh;
@@ -203,7 +203,7 @@
   background: #dc2626;
 }
 
-/* ==================== ACTION BUTTONS ==================== */
+
 .action-btn {
   padding: 8px 16px;
   border-radius: 8px;
@@ -229,7 +229,7 @@
   transform: translateY(-1px);
 }
 
-/* ==================== MANAGE SALONS ==================== */
+
 .manage-salons {
   width: 100%;
 }
@@ -312,7 +312,6 @@
   color: #111;
 }
 
-/* ==================== SALON DETAILS ==================== */
 .salon-details {
   display: flex;
   flex-direction: column;
@@ -340,7 +339,7 @@
   min-width: 70px;
 }
 
-/* ==================== ACTIONS ==================== */
+
 .salon-actions {
   display: flex;
   gap: 10px;
@@ -380,7 +379,7 @@
   background: #b91c1c;
 }
 
-/* ==================== STATUS BADGES ==================== */
+
 .status-badge {
   display: inline-flex;
   align-items: center;

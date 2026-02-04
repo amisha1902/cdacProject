@@ -208,15 +208,6 @@ const BookingConfirmation = () => {
         </Badge>
       </div>
 
-      {/* Salon Details
-      <Card className="mb-3 shadow-sm border-0 rounded-3 bg-white">
-        <Card.Body className="p-3">
-          <h6 className="fw-semibold mb-1" style={{ fontSize: "0.95rem" }}>{booking.salonName || "Salon"}</h6>
-          <p className="text-muted mb-0 small d-flex align-items-center">
-            <FaMapMarkerAlt className="me-1" style={{ fontSize: "0.8rem" }} /> {booking.salonAddress || "Address unavailable"}
-          </p>
-        </Card.Body>
-      </Card> */}
 
       {/* Services Breakdown */}
       <Card className="mb-3 shadow-sm border-0 rounded-3">

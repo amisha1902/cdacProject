@@ -7,7 +7,7 @@ import "./AdminDashboard.css";
 const ManageSalons = () => {
   const [salons, setSalons] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("all"); // all, pending, approved, rejected
+  const [filter, setFilter] = useState("all"); // Filter status: all, pending, approved, rejected
 
   useEffect(() => {
     fetchSalons();
