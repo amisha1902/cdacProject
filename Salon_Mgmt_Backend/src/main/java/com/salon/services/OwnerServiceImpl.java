@@ -398,6 +398,11 @@ public class OwnerServiceImpl implements OwnerService {
         }
     }
 
+
+    // @Override
+    // public ApiResponse uploadSalonGallery(Long salonId, List<MultipartFile> files, Integer userId) {
+        
+    // }
     @Override
     public ApiResponse uploadSalonGallery(Long salonId, List<MultipartFile> files, Integer userId) {
         Salon salon = getSalonById(salonId, userId);
